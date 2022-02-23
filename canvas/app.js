@@ -1,56 +1,28 @@
 import * as THREE from 'three';
-let OrbitControls = require("three-orbit-controls")(THREE);
-// import { GLTFLoader } from 'js/GLTFLoader.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+// import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 import fragment from './shader/fragment.glsl';
 import vertex from './shader/vertex.glsl';
 import * as dat from 'dat.gui';
 import gsap from 'gsap';
-import load from 'load-asset';
-import home from '../assets/1.jpg';
 
-
-const gallery = [
-  new THREE.TextureLoader().load('../assets/1.jpg'),
-  new THREE.TextureLoader().load('../assets/2.jpg'),
-  new THREE.TextureLoader().load('../assets/3.jpg'),
-  new THREE.TextureLoader().load('../assets/4.jpg')
-];
-
-let assets = [
-  '../assets/1.jpg',
-  '../assets/2.jpg',
-  '../assets/3.jpg',
-  '../assets/4.jpg'
-]
-
-// let config = [
-//   {
-//     page: 'homepage',
-//     img: home
-//   },
-//   {
-//     page: 'about',
-//     img: new THREE.TextureLoader().load('../assets/2.jpg')
-//   },
-//   {
-//     page: 'contact',
-//     img: new THREE.TextureLoader().load('../assets/3.jpg')
-//   },
-//   {
-//     page: 'blog',
-//     img: new THREE.TextureLoader().load('../assets/4.jpg')
-//   },
-// ];
+import about from '../img/about.jpg'
+import blog from '../img/blog.jpg'
+import contact from '../img/contact.jpeg'
+import home from '../img/home.jpg'
 
 export default class Sketch {
-  constructor(images,start) {
+  constructor() {
     this.scene = new THREE.Scene();
     // this.container = options.dom;
-    this.width = window.offsetWidth;
-    this.height = window.offsetHeight;
-    this.renderer = new THREE.WebGLRenderer();
-    this.renderer.setPixelRatio(window.devicePixelRatio);
+    // this.width = this.container.offsetWidth;
+    // this.height = this.container.offsetHeight;
+    this.renderer = new THREE.WebGLRenderer({
+      antialias: true
+    });
+    // this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     this.renderer.setSize(this.width, this.height);
     this.renderer.setClearColor(0xeeeeee, 1);
     this.renderer.physicallyCorrectLights = true;
@@ -78,62 +50,34 @@ export default class Sketch {
 
     this.isPlaying = true;
 
-    load.all(images).then((assets)=> {
-      this.addObjects();
-      for(let key in assets) {
-          assets[key] = new THREE.Texture(assets[key])
-      }
+    this.addObjects();
+    this.resize();
+    this.render();
+    this.setupResize();
+    // this.settings();
 
-      this.material.uniforms.t1.value = assets[start] || assets["index"];
-      this.material.uniforms.t1.value.needsUpdate = true
-      this.assets = assets;
-
-      this.addObjects();
-      this.resize();
-      this.render();
-      this.setupResize();
-      this.settings();
-      this.click();
-      this.play();
-    });
-  }
-
-  goto(page) {
-    if(sketch.assets) sketch.changeBG(page)
-    let gotoPage = config.find(o => {
-      return o.page == page;
-    });
-    console.log(gotoPage, 'Going to the page');
-  }
-
-  changeBG(newpage) {
-    if(this.animating) {
-      this.nextShow = newpage;
-      return
-    }
-    this.animating = true;
-    let nextTexture = this.assets[newpage] || this.assets["index"]
-    this.material.uniforms.t2.value = nextTexture
-    this.material.uniforms.t2.value.needsUpdate = true;
-
-    gsap.to(this.material.uniforms.progress,{
-        duration: 2,
-        value: 1,
-        onComplete:()=> {
-            this.material.uniforms.progress.value = 0;
-            this.material.uniforms.t1.value = nextTexture;
-            this.animating = false;
-            if(this.nextShow) {
-              this.changeBG(this.nextShow)
-              this.nextShow = null
-              
-            }
-        }
-    })
+    const loader = new THREE.TextureLoader()
+    this.config = [
+      {
+        page: 'home',
+        texture: loader.load(home)
+      },
+      {
+        page: 'about',
+        texture: loader.load(about)
+      },
+      {
+        page: 'contact',
+        texture: loader.load(contact)
+      },
+      {
+        page: 'blog',
+        texture: loader.load(blog)
+      },
+    ];
   }
 
   settings() {
-    let that = this;
     this.settings = {
       progress: 0,
     };
@@ -168,28 +112,15 @@ export default class Sketch {
     this.material.uniforms.resolution.value.z = a1;
     this.material.uniforms.resolution.value.w = a2;
 
-    this.camera.fov =
-      2 *
-      Math.atan(this.width / this.camera.aspect / (2 * this.cameraDistance)) *
-      (180 / Math.PI); // in degrees
-
-    // calculate scene MIGHT NEED?
-  // let dist  = camera.position.z - plane.position.z;
-  // let height = 1;
-  // camera.fov = 2*(180/Math.PI)*Math.atan(height/(2*dist));
-
-  // // if(w/h>1) {
-  // plane.scale.x = w/h;
-  // // }
+    // this.camera.fov =
+    //   2 *
+    //   Math.atan(this.width / this.camera.aspect / (2 * this.cameraDistance)) *
+    //   (180 / Math.PI); // in degrees
 
     this.camera.updateProjectionMatrix();
   }
-  // NEEDED NOT SURE
-  // resize();
 
   addObjects() {
-    let that = this;
-    
     this.material = new THREE.ShaderMaterial({
       extensions: {
         derivatives: "#extension GL_OES_standard_derivatives : enable"
@@ -200,9 +131,10 @@ export default class Sketch {
         progress: { value: 0 },
         t1: { value: null },
         t2: { value: null },
-        t3: { value: null },
-        t4: { value: null },
+        t1: { value: new THREE.TextureLoader().load(home) },
+        t2: { value: new THREE.TextureLoader().load(about) },
         resolution: { value: new THREE.Vector4() },
+        uvRate1: { value: new THREE.Vector2(1, 1) },
       },
       // wireframe: true,
       // transparent: true,
@@ -215,18 +147,22 @@ export default class Sketch {
     this.scene.add(this.plane);
   }
 
-  // let override = false;
-
-  click() {
-    document.querySelector('body').addEventListener('click', () => {
-    let tl = gsap.timeline({});
-      let pos = this.material.uniforms.progress.value;
-      let next = 1+ (((Math.floor(pos) + 1)%gallery.length -1) + gallery.length)%gallery.length;
-      tl.to(this.material.uniforms.progress, { duration: 0.7 }, {
-        value: next,
-        ease: 'power2.easeOut',
-      });
-    });  
+  goto(page) {
+    let gotoPage = this.config.find(o => {
+      return o.page == page
+    })
+    
+    this.material.uniforms.t2.value = gotoPage.texture
+    
+    let tl = new gsap.timeline()
+    tl.to(this.material.uniforms.progress, {
+      duration: 1,
+      value: 1,
+      onComplete:()=> {
+        this.material.uniforms.progress.value = 0
+        this.material.uniforms.t1.value = gotoPage.texture
+      }
+    })
   }
 
   stop() {
@@ -250,5 +186,6 @@ export default class Sketch {
   }
 }
 
-
-
+// new Sketch({
+//   dom: document.getElementById('container')
+// });

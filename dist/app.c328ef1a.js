@@ -5843,266 +5843,724 @@ TweenMaxWithCSS = gsapWithCSS.core.Tween;
 
 exports.TweenMax = TweenMaxWithCSS;
 exports.default = exports.gsap = gsapWithCSS;
-},{"./gsap-core.js":"node_modules/gsap/gsap-core.js","./CSSPlugin.js":"node_modules/gsap/CSSPlugin.js"}],"SplitText.min.js":[function(require,module,exports) {
-var define;
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+},{"./gsap-core.js":"node_modules/gsap/gsap-core.js","./CSSPlugin.js":"node_modules/gsap/CSSPlugin.js"}],"node_modules/gsap/utils/strings.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getText = getText;
+exports.splitInnerHTML = splitInnerHTML;
+exports.emojiSafeSplit = emojiSafeSplit;
+exports.emojiExp = void 0;
 
 /*!
- * SplitText 3.5.1
+ * strings: 3.5.1
  * https://greensock.com
- * 
- * @license Copyright 2020, GreenSock. All rights reserved.
- * Subject to the terms at https://greensock.com/standard-license or for Club GreenSock members, the agreement issued with that membership.
+ *
+ * Copyright 2008-2020, GreenSock. All rights reserved.
+ * Subject to the terms at https://greensock.com/standard-license or for
+ * Club GreenSock members, the agreement issued with that membership.
  * @author: Jack Doyle, jack@greensock.com
+*/
+
+/* eslint-disable */
+var _trimExp = /(^\s+|\s+$)/g;
+var emojiExp = /([\uD800-\uDBFF][\uDC00-\uDFFF](?:[\u200D\uFE0F][\uD800-\uDBFF][\uDC00-\uDFFF]){2,}|\uD83D\uDC69(?:\u200D(?:(?:\uD83D\uDC69\u200D)?\uD83D\uDC67|(?:\uD83D\uDC69\u200D)?\uD83D\uDC66)|\uD83C[\uDFFB-\uDFFF])|\uD83D\uDC69\u200D(?:\uD83D\uDC69\u200D)?\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC69\u200D(?:\uD83D\uDC69\u200D)?\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67])|\uD83C\uDFF3\uFE0F\u200D\uD83C\uDF08|(?:\uD83C[\uDFC3\uDFC4\uDFCA]|\uD83D[\uDC6E\uDC71\uDC73\uDC77\uDC81\uDC82\uDC86\uDC87\uDE45-\uDE47\uDE4B\uDE4D\uDE4E\uDEA3\uDEB4-\uDEB6]|\uD83E[\uDD26\uDD37-\uDD39\uDD3D\uDD3E\uDDD6-\uDDDD])(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2640\u2642]\uFE0F|\uD83D\uDC69(?:\uD83C[\uDFFB-\uDFFF])\u200D(?:\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92])|(?:\uD83C[\uDFC3\uDFC4\uDFCA]|\uD83D[\uDC6E\uDC6F\uDC71\uDC73\uDC77\uDC81\uDC82\uDC86\uDC87\uDE45-\uDE47\uDE4B\uDE4D\uDE4E\uDEA3\uDEB4-\uDEB6]|\uD83E[\uDD26\uDD37-\uDD39\uDD3C-\uDD3E\uDDD6-\uDDDF])\u200D[\u2640\u2642]\uFE0F|\uD83C\uDDFD\uD83C\uDDF0|\uD83C\uDDF6\uD83C\uDDE6|\uD83C\uDDF4\uD83C\uDDF2|\uD83C\uDDE9(?:\uD83C[\uDDEA\uDDEC\uDDEF\uDDF0\uDDF2\uDDF4\uDDFF])|\uD83C\uDDF7(?:\uD83C[\uDDEA\uDDF4\uDDF8\uDDFA\uDDFC])|\uD83C\uDDE8(?:\uD83C[\uDDE6\uDDE8\uDDE9\uDDEB-\uDDEE\uDDF0-\uDDF5\uDDF7\uDDFA-\uDDFF])|(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)(?:\uFE0F\u200D[\u2640\u2642]|(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2640\u2642])\uFE0F|(?:\uD83D\uDC41\uFE0F\u200D\uD83D\uDDE8|\uD83D\uDC69(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2695\u2696\u2708]|\uD83D\uDC69\u200D[\u2695\u2696\u2708]|\uD83D\uDC68(?:(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2695\u2696\u2708]|\u200D[\u2695\u2696\u2708]))\uFE0F|\uD83C\uDDF2(?:\uD83C[\uDDE6\uDDE8-\uDDED\uDDF0-\uDDFF])|\uD83D\uDC69\u200D(?:\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\u2764\uFE0F\u200D(?:\uD83D\uDC8B\u200D(?:\uD83D[\uDC68\uDC69])|\uD83D[\uDC68\uDC69]))|\uD83C\uDDF1(?:\uD83C[\uDDE6-\uDDE8\uDDEE\uDDF0\uDDF7-\uDDFB\uDDFE])|\uD83C\uDDEF(?:\uD83C[\uDDEA\uDDF2\uDDF4\uDDF5])|\uD83C\uDDED(?:\uD83C[\uDDF0\uDDF2\uDDF3\uDDF7\uDDF9\uDDFA])|\uD83C\uDDEB(?:\uD83C[\uDDEE-\uDDF0\uDDF2\uDDF4\uDDF7])|[#\*0-9]\uFE0F\u20E3|\uD83C\uDDE7(?:\uD83C[\uDDE6\uDDE7\uDDE9-\uDDEF\uDDF1-\uDDF4\uDDF6-\uDDF9\uDDFB\uDDFC\uDDFE\uDDFF])|\uD83C\uDDE6(?:\uD83C[\uDDE8-\uDDEC\uDDEE\uDDF1\uDDF2\uDDF4\uDDF6-\uDDFA\uDDFC\uDDFD\uDDFF])|\uD83C\uDDFF(?:\uD83C[\uDDE6\uDDF2\uDDFC])|\uD83C\uDDF5(?:\uD83C[\uDDE6\uDDEA-\uDDED\uDDF0-\uDDF3\uDDF7-\uDDF9\uDDFC\uDDFE])|\uD83C\uDDFB(?:\uD83C[\uDDE6\uDDE8\uDDEA\uDDEC\uDDEE\uDDF3\uDDFA])|\uD83C\uDDF3(?:\uD83C[\uDDE6\uDDE8\uDDEA-\uDDEC\uDDEE\uDDF1\uDDF4\uDDF5\uDDF7\uDDFA\uDDFF])|\uD83C\uDFF4\uDB40\uDC67\uDB40\uDC62(?:\uDB40\uDC77\uDB40\uDC6C\uDB40\uDC73|\uDB40\uDC73\uDB40\uDC63\uDB40\uDC74|\uDB40\uDC65\uDB40\uDC6E\uDB40\uDC67)\uDB40\uDC7F|\uD83D\uDC68(?:\u200D(?:\u2764\uFE0F\u200D(?:\uD83D\uDC8B\u200D)?\uD83D\uDC68|(?:(?:\uD83D[\uDC68\uDC69])\u200D)?\uD83D\uDC66\u200D\uD83D\uDC66|(?:(?:\uD83D[\uDC68\uDC69])\u200D)?\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92])|(?:\uD83C[\uDFFB-\uDFFF])\u200D(?:\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]))|\uD83C\uDDF8(?:\uD83C[\uDDE6-\uDDEA\uDDEC-\uDDF4\uDDF7-\uDDF9\uDDFB\uDDFD-\uDDFF])|\uD83C\uDDF0(?:\uD83C[\uDDEA\uDDEC-\uDDEE\uDDF2\uDDF3\uDDF5\uDDF7\uDDFC\uDDFE\uDDFF])|\uD83C\uDDFE(?:\uD83C[\uDDEA\uDDF9])|\uD83C\uDDEE(?:\uD83C[\uDDE8-\uDDEA\uDDF1-\uDDF4\uDDF6-\uDDF9])|\uD83C\uDDF9(?:\uD83C[\uDDE6\uDDE8\uDDE9\uDDEB-\uDDED\uDDEF-\uDDF4\uDDF7\uDDF9\uDDFB\uDDFC\uDDFF])|\uD83C\uDDEC(?:\uD83C[\uDDE6\uDDE7\uDDE9-\uDDEE\uDDF1-\uDDF3\uDDF5-\uDDFA\uDDFC\uDDFE])|\uD83C\uDDFA(?:\uD83C[\uDDE6\uDDEC\uDDF2\uDDF3\uDDF8\uDDFE\uDDFF])|\uD83C\uDDEA(?:\uD83C[\uDDE6\uDDE8\uDDEA\uDDEC\uDDED\uDDF7-\uDDFA])|\uD83C\uDDFC(?:\uD83C[\uDDEB\uDDF8])|(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)(?:\uD83C[\uDFFB-\uDFFF])|(?:\uD83C[\uDFC3\uDFC4\uDFCA]|\uD83D[\uDC6E\uDC71\uDC73\uDC77\uDC81\uDC82\uDC86\uDC87\uDE45-\uDE47\uDE4B\uDE4D\uDE4E\uDEA3\uDEB4-\uDEB6]|\uD83E[\uDD26\uDD37-\uDD39\uDD3D\uDD3E\uDDD6-\uDDDD])(?:\uD83C[\uDFFB-\uDFFF])|(?:[\u261D\u270A-\u270D]|\uD83C[\uDF85\uDFC2\uDFC7]|\uD83D[\uDC42\uDC43\uDC46-\uDC50\uDC66\uDC67\uDC70\uDC72\uDC74-\uDC76\uDC78\uDC7C\uDC83\uDC85\uDCAA\uDD74\uDD7A\uDD90\uDD95\uDD96\uDE4C\uDE4F\uDEC0\uDECC]|\uD83E[\uDD18-\uDD1C\uDD1E\uDD1F\uDD30-\uDD36\uDDD1-\uDDD5])(?:\uD83C[\uDFFB-\uDFFF])|\uD83D\uDC68(?:\u200D(?:(?:(?:\uD83D[\uDC68\uDC69])\u200D)?\uD83D\uDC67|(?:(?:\uD83D[\uDC68\uDC69])\u200D)?\uD83D\uDC66)|\uD83C[\uDFFB-\uDFFF])|(?:[\u261D\u26F9\u270A-\u270D]|\uD83C[\uDF85\uDFC2-\uDFC4\uDFC7\uDFCA-\uDFCC]|\uD83D[\uDC42\uDC43\uDC46-\uDC50\uDC66-\uDC69\uDC6E\uDC70-\uDC78\uDC7C\uDC81-\uDC83\uDC85-\uDC87\uDCAA\uDD74\uDD75\uDD7A\uDD90\uDD95\uDD96\uDE45-\uDE47\uDE4B-\uDE4F\uDEA3\uDEB4-\uDEB6\uDEC0\uDECC]|\uD83E[\uDD18-\uDD1C\uDD1E\uDD1F\uDD26\uDD30-\uDD39\uDD3D\uDD3E\uDDD1-\uDDDD])(?:\uD83C[\uDFFB-\uDFFF])?|(?:[\u231A\u231B\u23E9-\u23EC\u23F0\u23F3\u25FD\u25FE\u2614\u2615\u2648-\u2653\u267F\u2693\u26A1\u26AA\u26AB\u26BD\u26BE\u26C4\u26C5\u26CE\u26D4\u26EA\u26F2\u26F3\u26F5\u26FA\u26FD\u2705\u270A\u270B\u2728\u274C\u274E\u2753-\u2755\u2757\u2795-\u2797\u27B0\u27BF\u2B1B\u2B1C\u2B50\u2B55]|\uD83C[\uDC04\uDCCF\uDD8E\uDD91-\uDD9A\uDDE6-\uDDFF\uDE01\uDE1A\uDE2F\uDE32-\uDE36\uDE38-\uDE3A\uDE50\uDE51\uDF00-\uDF20\uDF2D-\uDF35\uDF37-\uDF7C\uDF7E-\uDF93\uDFA0-\uDFCA\uDFCF-\uDFD3\uDFE0-\uDFF0\uDFF4\uDFF8-\uDFFF]|\uD83D[\uDC00-\uDC3E\uDC40\uDC42-\uDCFC\uDCFF-\uDD3D\uDD4B-\uDD4E\uDD50-\uDD67\uDD7A\uDD95\uDD96\uDDA4\uDDFB-\uDE4F\uDE80-\uDEC5\uDECC\uDED0-\uDED2\uDEEB\uDEEC\uDEF4-\uDEF8]|\uD83E[\uDD10-\uDD3A\uDD3C-\uDD3E\uDD40-\uDD45\uDD47-\uDD4C\uDD50-\uDD6B\uDD80-\uDD97\uDDC0\uDDD0-\uDDE6])|(?:[#\*0-9\xA9\xAE\u203C\u2049\u2122\u2139\u2194-\u2199\u21A9\u21AA\u231A\u231B\u2328\u23CF\u23E9-\u23F3\u23F8-\u23FA\u24C2\u25AA\u25AB\u25B6\u25C0\u25FB-\u25FE\u2600-\u2604\u260E\u2611\u2614\u2615\u2618\u261D\u2620\u2622\u2623\u2626\u262A\u262E\u262F\u2638-\u263A\u2640\u2642\u2648-\u2653\u2660\u2663\u2665\u2666\u2668\u267B\u267F\u2692-\u2697\u2699\u269B\u269C\u26A0\u26A1\u26AA\u26AB\u26B0\u26B1\u26BD\u26BE\u26C4\u26C5\u26C8\u26CE\u26CF\u26D1\u26D3\u26D4\u26E9\u26EA\u26F0-\u26F5\u26F7-\u26FA\u26FD\u2702\u2705\u2708-\u270D\u270F\u2712\u2714\u2716\u271D\u2721\u2728\u2733\u2734\u2744\u2747\u274C\u274E\u2753-\u2755\u2757\u2763\u2764\u2795-\u2797\u27A1\u27B0\u27BF\u2934\u2935\u2B05-\u2B07\u2B1B\u2B1C\u2B50\u2B55\u3030\u303D\u3297\u3299]|\uD83C[\uDC04\uDCCF\uDD70\uDD71\uDD7E\uDD7F\uDD8E\uDD91-\uDD9A\uDDE6-\uDDFF\uDE01\uDE02\uDE1A\uDE2F\uDE32-\uDE3A\uDE50\uDE51\uDF00-\uDF21\uDF24-\uDF93\uDF96\uDF97\uDF99-\uDF9B\uDF9E-\uDFF0\uDFF3-\uDFF5\uDFF7-\uDFFF]|\uD83D[\uDC00-\uDCFD\uDCFF-\uDD3D\uDD49-\uDD4E\uDD50-\uDD67\uDD6F\uDD70\uDD73-\uDD7A\uDD87\uDD8A-\uDD8D\uDD90\uDD95\uDD96\uDDA4\uDDA5\uDDA8\uDDB1\uDDB2\uDDBC\uDDC2-\uDDC4\uDDD1-\uDDD3\uDDDC-\uDDDE\uDDE1\uDDE3\uDDE8\uDDEF\uDDF3\uDDFA-\uDE4F\uDE80-\uDEC5\uDECB-\uDED2\uDEE0-\uDEE5\uDEE9\uDEEB\uDEEC\uDEF0\uDEF3-\uDEF8]|\uD83E[\uDD10-\uDD3A\uDD3C-\uDD3E\uDD40-\uDD45\uDD47-\uDD4C\uDD50-\uDD6B\uDD80-\uDD97\uDDC0\uDDD0-\uDDE6])\uFE0F)/;
+exports.emojiExp = emojiExp;
+
+function getText(e) {
+  var type = e.nodeType,
+      result = "";
+
+  if (type === 1 || type === 9 || type === 11) {
+    if (typeof e.textContent === "string") {
+      return e.textContent;
+    } else {
+      for (e = e.firstChild; e; e = e.nextSibling) {
+        result += getText(e);
+      }
+    }
+  } else if (type === 3 || type === 4) {
+    return e.nodeValue;
+  }
+
+  return result;
+}
+
+function splitInnerHTML(element, delimiter, trim) {
+  var node = element.firstChild,
+      result = [];
+
+  while (node) {
+    if (node.nodeType === 3) {
+      result.push.apply(result, emojiSafeSplit((node.nodeValue + "").replace(/^\n+/g, "").replace(/\s+/g, " "), delimiter, trim));
+    } else if ((node.nodeName + "").toLowerCase() === "br") {
+      result[result.length - 1] += "<br>";
+    } else {
+      result.push(node.outerHTML);
+    }
+
+    node = node.nextSibling;
+  }
+
+  return result;
+}
+/*
+//smaller kb version that only handles the simpler emoji's, which is often perfectly adequate.
+
+let _emoji = "[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2694-\u2697]|\uD83E[\uDD10-\uDD5D]|[\uD800-\uDBFF][\uDC00-\uDFFF]",
+	_emojiExp = new RegExp(_emoji),
+	_emojiAndCharsExp = new RegExp(_emoji + "|.", "g"),
+	_emojiSafeSplit = (text, delimiter, trim) => {
+		if (trim) {
+			text = text.replace(_trimExp, "");
+		}
+		return ((delimiter === "" || !delimiter) && _emojiExp.test(text)) ? text.match(_emojiAndCharsExp) : text.split(delimiter || "");
+	};
  */
-!function (D, u) {
-  "object" == (typeof exports === "undefined" ? "undefined" : _typeof(exports)) && "undefined" != typeof module ? u(exports) : "function" == typeof define && define.amd ? define(["exports"], u) : u((D = D || self).window = D.window || {});
-}(this, function (D) {
-  "use strict";
 
-  var b = /([\uD800-\uDBFF][\uDC00-\uDFFF](?:[\u200D\uFE0F][\uD800-\uDBFF][\uDC00-\uDFFF]){2,}|\uD83D\uDC69(?:\u200D(?:(?:\uD83D\uDC69\u200D)?\uD83D\uDC67|(?:\uD83D\uDC69\u200D)?\uD83D\uDC66)|\uD83C[\uDFFB-\uDFFF])|\uD83D\uDC69\u200D(?:\uD83D\uDC69\u200D)?\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC69\u200D(?:\uD83D\uDC69\u200D)?\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67])|\uD83C\uDFF3\uFE0F\u200D\uD83C\uDF08|(?:\uD83C[\uDFC3\uDFC4\uDFCA]|\uD83D[\uDC6E\uDC71\uDC73\uDC77\uDC81\uDC82\uDC86\uDC87\uDE45-\uDE47\uDE4B\uDE4D\uDE4E\uDEA3\uDEB4-\uDEB6]|\uD83E[\uDD26\uDD37-\uDD39\uDD3D\uDD3E\uDDD6-\uDDDD])(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2640\u2642]\uFE0F|\uD83D\uDC69(?:\uD83C[\uDFFB-\uDFFF])\u200D(?:\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92])|(?:\uD83C[\uDFC3\uDFC4\uDFCA]|\uD83D[\uDC6E\uDC6F\uDC71\uDC73\uDC77\uDC81\uDC82\uDC86\uDC87\uDE45-\uDE47\uDE4B\uDE4D\uDE4E\uDEA3\uDEB4-\uDEB6]|\uD83E[\uDD26\uDD37-\uDD39\uDD3C-\uDD3E\uDDD6-\uDDDF])\u200D[\u2640\u2642]\uFE0F|\uD83C\uDDFD\uD83C\uDDF0|\uD83C\uDDF6\uD83C\uDDE6|\uD83C\uDDF4\uD83C\uDDF2|\uD83C\uDDE9(?:\uD83C[\uDDEA\uDDEC\uDDEF\uDDF0\uDDF2\uDDF4\uDDFF])|\uD83C\uDDF7(?:\uD83C[\uDDEA\uDDF4\uDDF8\uDDFA\uDDFC])|\uD83C\uDDE8(?:\uD83C[\uDDE6\uDDE8\uDDE9\uDDEB-\uDDEE\uDDF0-\uDDF5\uDDF7\uDDFA-\uDDFF])|(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)(?:\uFE0F\u200D[\u2640\u2642]|(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2640\u2642])\uFE0F|(?:\uD83D\uDC41\uFE0F\u200D\uD83D\uDDE8|\uD83D\uDC69(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2695\u2696\u2708]|\uD83D\uDC69\u200D[\u2695\u2696\u2708]|\uD83D\uDC68(?:(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2695\u2696\u2708]|\u200D[\u2695\u2696\u2708]))\uFE0F|\uD83C\uDDF2(?:\uD83C[\uDDE6\uDDE8-\uDDED\uDDF0-\uDDFF])|\uD83D\uDC69\u200D(?:\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\u2764\uFE0F\u200D(?:\uD83D\uDC8B\u200D(?:\uD83D[\uDC68\uDC69])|\uD83D[\uDC68\uDC69]))|\uD83C\uDDF1(?:\uD83C[\uDDE6-\uDDE8\uDDEE\uDDF0\uDDF7-\uDDFB\uDDFE])|\uD83C\uDDEF(?:\uD83C[\uDDEA\uDDF2\uDDF4\uDDF5])|\uD83C\uDDED(?:\uD83C[\uDDF0\uDDF2\uDDF3\uDDF7\uDDF9\uDDFA])|\uD83C\uDDEB(?:\uD83C[\uDDEE-\uDDF0\uDDF2\uDDF4\uDDF7])|[#\*0-9]\uFE0F\u20E3|\uD83C\uDDE7(?:\uD83C[\uDDE6\uDDE7\uDDE9-\uDDEF\uDDF1-\uDDF4\uDDF6-\uDDF9\uDDFB\uDDFC\uDDFE\uDDFF])|\uD83C\uDDE6(?:\uD83C[\uDDE8-\uDDEC\uDDEE\uDDF1\uDDF2\uDDF4\uDDF6-\uDDFA\uDDFC\uDDFD\uDDFF])|\uD83C\uDDFF(?:\uD83C[\uDDE6\uDDF2\uDDFC])|\uD83C\uDDF5(?:\uD83C[\uDDE6\uDDEA-\uDDED\uDDF0-\uDDF3\uDDF7-\uDDF9\uDDFC\uDDFE])|\uD83C\uDDFB(?:\uD83C[\uDDE6\uDDE8\uDDEA\uDDEC\uDDEE\uDDF3\uDDFA])|\uD83C\uDDF3(?:\uD83C[\uDDE6\uDDE8\uDDEA-\uDDEC\uDDEE\uDDF1\uDDF4\uDDF5\uDDF7\uDDFA\uDDFF])|\uD83C\uDFF4\uDB40\uDC67\uDB40\uDC62(?:\uDB40\uDC77\uDB40\uDC6C\uDB40\uDC73|\uDB40\uDC73\uDB40\uDC63\uDB40\uDC74|\uDB40\uDC65\uDB40\uDC6E\uDB40\uDC67)\uDB40\uDC7F|\uD83D\uDC68(?:\u200D(?:\u2764\uFE0F\u200D(?:\uD83D\uDC8B\u200D)?\uD83D\uDC68|(?:(?:\uD83D[\uDC68\uDC69])\u200D)?\uD83D\uDC66\u200D\uD83D\uDC66|(?:(?:\uD83D[\uDC68\uDC69])\u200D)?\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92])|(?:\uD83C[\uDFFB-\uDFFF])\u200D(?:\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]))|\uD83C\uDDF8(?:\uD83C[\uDDE6-\uDDEA\uDDEC-\uDDF4\uDDF7-\uDDF9\uDDFB\uDDFD-\uDDFF])|\uD83C\uDDF0(?:\uD83C[\uDDEA\uDDEC-\uDDEE\uDDF2\uDDF3\uDDF5\uDDF7\uDDFC\uDDFE\uDDFF])|\uD83C\uDDFE(?:\uD83C[\uDDEA\uDDF9])|\uD83C\uDDEE(?:\uD83C[\uDDE8-\uDDEA\uDDF1-\uDDF4\uDDF6-\uDDF9])|\uD83C\uDDF9(?:\uD83C[\uDDE6\uDDE8\uDDE9\uDDEB-\uDDED\uDDEF-\uDDF4\uDDF7\uDDF9\uDDFB\uDDFC\uDDFF])|\uD83C\uDDEC(?:\uD83C[\uDDE6\uDDE7\uDDE9-\uDDEE\uDDF1-\uDDF3\uDDF5-\uDDFA\uDDFC\uDDFE])|\uD83C\uDDFA(?:\uD83C[\uDDE6\uDDEC\uDDF2\uDDF3\uDDF8\uDDFE\uDDFF])|\uD83C\uDDEA(?:\uD83C[\uDDE6\uDDE8\uDDEA\uDDEC\uDDED\uDDF7-\uDDFA])|\uD83C\uDDFC(?:\uD83C[\uDDEB\uDDF8])|(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)(?:\uD83C[\uDFFB-\uDFFF])|(?:\uD83C[\uDFC3\uDFC4\uDFCA]|\uD83D[\uDC6E\uDC71\uDC73\uDC77\uDC81\uDC82\uDC86\uDC87\uDE45-\uDE47\uDE4B\uDE4D\uDE4E\uDEA3\uDEB4-\uDEB6]|\uD83E[\uDD26\uDD37-\uDD39\uDD3D\uDD3E\uDDD6-\uDDDD])(?:\uD83C[\uDFFB-\uDFFF])|(?:[\u261D\u270A-\u270D]|\uD83C[\uDF85\uDFC2\uDFC7]|\uD83D[\uDC42\uDC43\uDC46-\uDC50\uDC66\uDC67\uDC70\uDC72\uDC74-\uDC76\uDC78\uDC7C\uDC83\uDC85\uDCAA\uDD74\uDD7A\uDD90\uDD95\uDD96\uDE4C\uDE4F\uDEC0\uDECC]|\uD83E[\uDD18-\uDD1C\uDD1E\uDD1F\uDD30-\uDD36\uDDD1-\uDDD5])(?:\uD83C[\uDFFB-\uDFFF])|\uD83D\uDC68(?:\u200D(?:(?:(?:\uD83D[\uDC68\uDC69])\u200D)?\uD83D\uDC67|(?:(?:\uD83D[\uDC68\uDC69])\u200D)?\uD83D\uDC66)|\uD83C[\uDFFB-\uDFFF])|(?:[\u261D\u26F9\u270A-\u270D]|\uD83C[\uDF85\uDFC2-\uDFC4\uDFC7\uDFCA-\uDFCC]|\uD83D[\uDC42\uDC43\uDC46-\uDC50\uDC66-\uDC69\uDC6E\uDC70-\uDC78\uDC7C\uDC81-\uDC83\uDC85-\uDC87\uDCAA\uDD74\uDD75\uDD7A\uDD90\uDD95\uDD96\uDE45-\uDE47\uDE4B-\uDE4F\uDEA3\uDEB4-\uDEB6\uDEC0\uDECC]|\uD83E[\uDD18-\uDD1C\uDD1E\uDD1F\uDD26\uDD30-\uDD39\uDD3D\uDD3E\uDDD1-\uDDDD])(?:\uD83C[\uDFFB-\uDFFF])?|(?:[\u231A\u231B\u23E9-\u23EC\u23F0\u23F3\u25FD\u25FE\u2614\u2615\u2648-\u2653\u267F\u2693\u26A1\u26AA\u26AB\u26BD\u26BE\u26C4\u26C5\u26CE\u26D4\u26EA\u26F2\u26F3\u26F5\u26FA\u26FD\u2705\u270A\u270B\u2728\u274C\u274E\u2753-\u2755\u2757\u2795-\u2797\u27B0\u27BF\u2B1B\u2B1C\u2B50\u2B55]|\uD83C[\uDC04\uDCCF\uDD8E\uDD91-\uDD9A\uDDE6-\uDDFF\uDE01\uDE1A\uDE2F\uDE32-\uDE36\uDE38-\uDE3A\uDE50\uDE51\uDF00-\uDF20\uDF2D-\uDF35\uDF37-\uDF7C\uDF7E-\uDF93\uDFA0-\uDFCA\uDFCF-\uDFD3\uDFE0-\uDFF0\uDFF4\uDFF8-\uDFFF]|\uD83D[\uDC00-\uDC3E\uDC40\uDC42-\uDCFC\uDCFF-\uDD3D\uDD4B-\uDD4E\uDD50-\uDD67\uDD7A\uDD95\uDD96\uDDA4\uDDFB-\uDE4F\uDE80-\uDEC5\uDECC\uDED0-\uDED2\uDEEB\uDEEC\uDEF4-\uDEF8]|\uD83E[\uDD10-\uDD3A\uDD3C-\uDD3E\uDD40-\uDD45\uDD47-\uDD4C\uDD50-\uDD6B\uDD80-\uDD97\uDDC0\uDDD0-\uDDE6])|(?:[#\*0-9\xA9\xAE\u203C\u2049\u2122\u2139\u2194-\u2199\u21A9\u21AA\u231A\u231B\u2328\u23CF\u23E9-\u23F3\u23F8-\u23FA\u24C2\u25AA\u25AB\u25B6\u25C0\u25FB-\u25FE\u2600-\u2604\u260E\u2611\u2614\u2615\u2618\u261D\u2620\u2622\u2623\u2626\u262A\u262E\u262F\u2638-\u263A\u2640\u2642\u2648-\u2653\u2660\u2663\u2665\u2666\u2668\u267B\u267F\u2692-\u2697\u2699\u269B\u269C\u26A0\u26A1\u26AA\u26AB\u26B0\u26B1\u26BD\u26BE\u26C4\u26C5\u26C8\u26CE\u26CF\u26D1\u26D3\u26D4\u26E9\u26EA\u26F0-\u26F5\u26F7-\u26FA\u26FD\u2702\u2705\u2708-\u270D\u270F\u2712\u2714\u2716\u271D\u2721\u2728\u2733\u2734\u2744\u2747\u274C\u274E\u2753-\u2755\u2757\u2763\u2764\u2795-\u2797\u27A1\u27B0\u27BF\u2934\u2935\u2B05-\u2B07\u2B1B\u2B1C\u2B50\u2B55\u3030\u303D\u3297\u3299]|\uD83C[\uDC04\uDCCF\uDD70\uDD71\uDD7E\uDD7F\uDD8E\uDD91-\uDD9A\uDDE6-\uDDFF\uDE01\uDE02\uDE1A\uDE2F\uDE32-\uDE3A\uDE50\uDE51\uDF00-\uDF21\uDF24-\uDF93\uDF96\uDF97\uDF99-\uDF9B\uDF9E-\uDFF0\uDFF3-\uDFF5\uDFF7-\uDFFF]|\uD83D[\uDC00-\uDCFD\uDCFF-\uDD3D\uDD49-\uDD4E\uDD50-\uDD67\uDD6F\uDD70\uDD73-\uDD7A\uDD87\uDD8A-\uDD8D\uDD90\uDD95\uDD96\uDDA4\uDDA5\uDDA8\uDDB1\uDDB2\uDDBC\uDDC2-\uDDC4\uDDD1-\uDDD3\uDDDC-\uDDDE\uDDE1\uDDE3\uDDE8\uDDEF\uDDF3\uDDFA-\uDE4F\uDE80-\uDEC5\uDECB-\uDED2\uDEE0-\uDEE5\uDEE9\uDEEB\uDEEC\uDEF0\uDEF3-\uDEF8]|\uD83E[\uDD10-\uDD3A\uDD3C-\uDD3E\uDD40-\uDD45\uDD47-\uDD4C\uDD50-\uDD6B\uDD80-\uDD97\uDDC0\uDDD0-\uDDE6])\uFE0F)/;
 
-  function k(D) {
-    return e.getComputedStyle(D);
+function emojiSafeSplit(text, delimiter, trim) {
+  text += ""; // make sure it's cast as a string. Someone may pass in a number.
+
+  if (trim) {
+    text = text.replace(_trimExp, "");
   }
 
-  function n(D, u) {
-    var e;
-    return i(D) ? D : "string" == (e = _typeof(D)) && !u && D ? E.call(Q.querySelectorAll(D), 0) : D && "object" == e && "length" in D ? E.call(D, 0) : D ? [D] : [];
+  if (delimiter && delimiter !== "") {
+    return text.replace(/>/g, "&gt;").replace(/</g, "&lt;").split(delimiter);
   }
 
-  function o(D) {
-    return "absolute" === D.position || !0 === D.absolute;
-  }
+  var result = [],
+      l = text.length,
+      i = 0,
+      j,
+      character;
 
-  function p(D, u) {
-    for (var e, F = u.length; -1 < --F;) {
-      if (e = u[F], D.substr(0, e.length) === e) return e.length;
-    }
-  }
+  for (; i < l; i++) {
+    character = text.charAt(i);
 
-  function r(D, u) {
-    void 0 === D && (D = "");
-    var e = ~D.indexOf("++"),
-        F = 1;
-    return e && (D = D.split("++").join("")), function () {
-      return "<" + u + " style='position:relative;display:inline-block;'" + (D ? " class='" + D + (e ? F++ : "") + "'>" : ">");
-    };
-  }
-
-  function s(D, u, e) {
-    var F = D.nodeType;
-    if (1 === F || 9 === F || 11 === F) for (D = D.firstChild; D; D = D.nextSibling) {
-      s(D, u, e);
-    } else 3 !== F && 4 !== F || (D.nodeValue = D.nodeValue.split(u).join(e));
-  }
-
-  function t(D, u) {
-    for (var e = u.length; -1 < --e;) {
-      D.push(u[e]);
-    }
-  }
-
-  function u(D, u, e) {
-    for (var F; D && D !== u;) {
-      if (F = D._next || D.nextSibling) return F.textContent.charAt(0) === e;
-      D = D.parentNode || D._parent;
-    }
-  }
-
-  function v(D) {
-    var u,
-        e,
-        F = n(D.childNodes),
-        t = F.length;
-
-    for (u = 0; u < t; u++) {
-      (e = F[u])._isSplit ? v(e) : (u && 3 === e.previousSibling.nodeType ? e.previousSibling.nodeValue += 3 === e.nodeType ? e.nodeValue : e.firstChild.nodeValue : 3 !== e.nodeType && D.insertBefore(e.firstChild, e), D.removeChild(e));
-    }
-  }
-
-  function w(D, u) {
-    return parseFloat(u[D]) || 0;
-  }
-
-  function x(D, e, F, C, i, n, E) {
-    var r,
-        l,
-        a,
-        p,
-        d,
-        h,
-        B,
-        f,
-        A,
-        c,
-        g,
-        x,
-        y = k(D),
-        b = w("paddingLeft", y),
-        _ = -999,
-        S = w("borderBottomWidth", y) + w("borderTopWidth", y),
-        T = w("borderLeftWidth", y) + w("borderRightWidth", y),
-        N = w("paddingTop", y) + w("paddingBottom", y),
-        m = w("paddingLeft", y) + w("paddingRight", y),
-        L = w("fontSize", y) * (e.lineThreshold || .2),
-        W = y.textAlign,
-        H = [],
-        O = [],
-        V = [],
-        j = e.wordDelimiter || " ",
-        M = e.tag ? e.tag : e.span ? "span" : "div",
-        R = e.type || e.split || "chars,words,lines",
-        z = i && ~R.indexOf("lines") ? [] : null,
-        P = ~R.indexOf("words"),
-        q = ~R.indexOf("chars"),
-        G = o(e),
-        I = e.linesClass,
-        J = ~(I || "").indexOf("++"),
-        K = [];
-
-    for (J && (I = I.split("++").join("")), a = (l = D.getElementsByTagName("*")).length, d = [], r = 0; r < a; r++) {
-      d[r] = l[r];
+    if (character.charCodeAt(0) >= 0xD800 && character.charCodeAt(0) <= 0xDBFF || text.charCodeAt(i + 1) >= 0xFE00 && text.charCodeAt(i + 1) <= 0xFE0F) {
+      //special emoji characters use 2 or 4 unicode characters that we must keep together.
+      j = ((text.substr(i, 12).split(emojiExp) || [])[1] || "").length || 2;
+      character = text.substr(i, j);
+      result.emoji = 1;
+      i += j - 1;
     }
 
-    if (z || G) for (r = 0; r < a; r++) {
-      ((h = (p = d[r]).parentNode === D) || G || q && !P) && (x = p.offsetTop, z && h && Math.abs(x - _) > L && ("BR" !== p.nodeName || 0 === r) && (B = [], z.push(B), _ = x), G && (p._x = p.offsetLeft, p._y = x, p._w = p.offsetWidth, p._h = p.offsetHeight), z && ((p._isSplit && h || !q && h || P && h || !P && p.parentNode.parentNode === D && !p.parentNode._isSplit) && (B.push(p), p._x -= b, u(p, D, j) && (p._wordEnd = !0)), "BR" === p.nodeName && (p.nextSibling && "BR" === p.nextSibling.nodeName || 0 === r) && z.push([])));
-    }
-
-    for (r = 0; r < a; r++) {
-      h = (p = d[r]).parentNode === D, "BR" !== p.nodeName ? (G && (A = p.style, P || h || (p._x += p.parentNode._x, p._y += p.parentNode._y), A.left = p._x + "px", A.top = p._y + "px", A.position = "absolute", A.display = "block", A.width = p._w + 1 + "px", A.height = p._h + "px"), !P && q ? p._isSplit ? (p._next = p.nextSibling, p.parentNode.appendChild(p)) : p.parentNode._isSplit ? (p._parent = p.parentNode, !p.previousSibling && p.firstChild && (p.firstChild._isFirst = !0), p.nextSibling && " " === p.nextSibling.textContent && !p.nextSibling.nextSibling && K.push(p.nextSibling), p._next = p.nextSibling && p.nextSibling._isFirst ? null : p.nextSibling, p.parentNode.removeChild(p), d.splice(r--, 1), a--) : h || (x = !p.nextSibling && u(p.parentNode, D, j), p.parentNode._parent && p.parentNode._parent.appendChild(p), x && p.parentNode.appendChild(Q.createTextNode(" ")), "span" === M && (p.style.display = "inline"), H.push(p)) : p.parentNode._isSplit && !p._isSplit && "" !== p.innerHTML ? O.push(p) : q && !p._isSplit && ("span" === M && (p.style.display = "inline"), H.push(p))) : z || G ? (p.parentNode && p.parentNode.removeChild(p), d.splice(r--, 1), a--) : P || D.appendChild(p);
-    }
-
-    for (r = K.length; -1 < --r;) {
-      K[r].parentNode.removeChild(K[r]);
-    }
-
-    if (z) {
-      for (G && (c = Q.createElement(M), D.appendChild(c), g = c.offsetWidth + "px", x = c.offsetParent === D ? 0 : D.offsetLeft, D.removeChild(c)), A = D.style.cssText, D.style.cssText = "display:none;"; D.firstChild;) {
-        D.removeChild(D.firstChild);
-      }
-
-      for (f = " " === j && (!G || !P && !q), r = 0; r < z.length; r++) {
-        for (B = z[r], (c = Q.createElement(M)).style.cssText = "display:block;text-align:" + W + ";position:" + (G ? "absolute;" : "relative;"), I && (c.className = I + (J ? r + 1 : "")), V.push(c), a = B.length, l = 0; l < a; l++) {
-          "BR" !== B[l].nodeName && (p = B[l], c.appendChild(p), f && p._wordEnd && c.appendChild(Q.createTextNode(" ")), G && (0 === l && (c.style.top = p._y + "px", c.style.left = b + x + "px"), p.style.top = "0px", x && (p.style.left = p._x - x + "px")));
-        }
-
-        0 === a ? c.innerHTML = "&nbsp;" : P || q || (v(c), s(c, String.fromCharCode(160), " ")), G && (c.style.width = g, c.style.height = p._h + "px"), D.appendChild(c);
-      }
-
-      D.style.cssText = A;
-    }
-
-    G && (E > D.clientHeight && (D.style.height = E - N + "px", D.clientHeight < E && (D.style.height = E + S + "px")), n > D.clientWidth && (D.style.width = n - m + "px", D.clientWidth < n && (D.style.width = n + T + "px"))), t(F, H), P && t(C, O), t(i, V);
+    result.push(character === ">" ? "&gt;" : character === "<" ? "&lt;" : character);
   }
 
-  function y(D, u, e, F) {
-    var t,
-        C,
-        i,
-        n,
-        E,
-        r,
-        l,
-        a,
-        d = u.tag ? u.tag : u.span ? "span" : "div",
-        h = ~(u.type || u.split || "chars,words,lines").indexOf("chars"),
-        B = o(u),
-        f = u.wordDelimiter || " ",
-        A = " " !== f ? "" : B ? "&#173; " : " ",
-        c = "</" + d + ">",
-        g = 1,
-        x = u.specialChars ? "function" == typeof u.specialChars ? u.specialChars : p : null,
-        y = Q.createElement("div"),
-        v = D.parentNode;
+  return result;
+}
+},{}],"node_modules/gsap/SplitText.js":[function(require,module,exports) {
+"use strict";
 
-    for (v.insertBefore(y, D), y.textContent = D.nodeValue, v.removeChild(D), l = -1 !== (t = function getText(D) {
-      var u = D.nodeType,
-          e = "";
-
-      if (1 === u || 9 === u || 11 === u) {
-        if ("string" == typeof D.textContent) return D.textContent;
-
-        for (D = D.firstChild; D; D = D.nextSibling) {
-          e += getText(D);
-        }
-      } else if (3 === u || 4 === u) return D.nodeValue;
-
-      return e;
-    }(D = y)).indexOf("<"), !1 !== u.reduceWhiteSpace && (t = t.replace(S, " ").replace(_, "")), l && (t = t.split("<").join("{{LT}}")), E = t.length, C = (" " === t.charAt(0) ? A : "") + e(), i = 0; i < E; i++) {
-      if (r = t.charAt(i), x && (a = x(t.substr(i), u.specialChars))) r = t.substr(i, a || 1), C += h && " " !== r ? F() + r + "</" + d + ">" : r, i += a - 1;else if (r === f && t.charAt(i - 1) !== f && i) {
-        for (C += g ? c : "", g = 0; t.charAt(i + 1) === f;) {
-          C += A, i++;
-        }
-
-        i === E - 1 ? C += A : ")" !== t.charAt(i + 1) && (C += A + e(), g = 1);
-      } else "{" === r && "{{LT}}" === t.substr(i, 6) ? (C += h ? F() + "{{LT}}</" + d + ">" : "{{LT}}", i += 5) : 55296 <= r.charCodeAt(0) && r.charCodeAt(0) <= 56319 || 65024 <= t.charCodeAt(i + 1) && t.charCodeAt(i + 1) <= 65039 ? (n = ((t.substr(i, 12).split(b) || [])[1] || "").length || 2, C += h && " " !== r ? F() + t.substr(i, n) + "</" + d + ">" : t.substr(i, n), i += n - 1) : C += h && " " !== r ? F() + r + "</" + d + ">" : r;
-    }
-
-    D.outerHTML = C + (g ? c : ""), l && s(v, "{{LT}}", "<");
-  }
-
-  function z(D, u, e, F) {
-    var t,
-        C,
-        i = n(D.childNodes),
-        E = i.length,
-        s = o(u);
-
-    if (3 !== D.nodeType || 1 < E) {
-      for (u.absolute = !1, t = 0; t < E; t++) {
-        3 === (C = i[t]).nodeType && !/\S+/.test(C.nodeValue) || (s && 3 !== C.nodeType && "inline" === k(C).display && (C.style.display = "inline-block", C.style.position = "relative"), C._isSplit = !0, z(C, u, e, F));
-      }
-
-      return u.absolute = s, void (D._isSplit = !0);
-    }
-
-    y(D, u, e, F);
-  }
-
-  var Q,
-      e,
-      F,
-      C,
-      _ = /(?:\r|\n|\t\t)/g,
-      S = /(?:\s\s+)/g,
-      i = Array.isArray,
-      E = [].slice,
-      l = ((C = SplitText.prototype).split = function split(D) {
-    this.isSplit && this.revert(), this.vars = D = D || this.vars, this._originals.length = this.chars.length = this.words.length = this.lines.length = 0;
-
-    for (var u, e, F, t = this.elements.length, C = D.tag ? D.tag : D.span ? "span" : "div", i = r(D.wordsClass, C), n = r(D.charsClass, C); -1 < --t;) {
-      F = this.elements[t], this._originals[t] = F.innerHTML, u = F.clientHeight, e = F.clientWidth, z(F, D, i, n), x(F, D, this.chars, this.words, this.lines, e, u);
-    }
-
-    return this.chars.reverse(), this.words.reverse(), this.lines.reverse(), this.isSplit = !0, this;
-  }, C.revert = function revert() {
-    var e = this._originals;
-    if (!e) throw "revert() call wasn't scoped properly.";
-    return this.elements.forEach(function (D, u) {
-      return D.innerHTML = e[u];
-    }), this.chars = [], this.words = [], this.lines = [], this.isSplit = !1, this;
-  }, SplitText.create = function create(D, u) {
-    return new SplitText(D, u);
-  }, SplitText);
-
-  function SplitText(D, u) {
-    F || function _initCore() {
-      Q = document, e = window, F = 1;
-    }(), this.elements = n(D), this.chars = [], this.words = [], this.lines = [], this._originals = [], this.vars = u || {}, this.split(u);
-  }
-
-  l.version = "3.5.1", D.SplitText = l, D.default = l;
-
-  if (typeof window === "undefined" || window !== D) {
-    Object.defineProperty(D, "__esModule", {
-      value: !0
-    });
-  } else {
-    delete D.default;
-  }
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-},{}],"node_modules/three/build/three.module.js":[function(require,module,exports) {
+exports.default = exports.SplitText = void 0;
+
+var _strings = require("./utils/strings.js");
+
+/*!
+ * SplitText: 3.5.1
+ * https://greensock.com
+ *
+ * @license Copyright 2008-2020, GreenSock. All rights reserved.
+ * Subject to the terms at https://greensock.com/standard-license or for
+ * Club GreenSock members, the agreement issued with that membership.
+ * @author: Jack Doyle, jack@greensock.com
+*/
+
+/* eslint-disable */
+var _doc,
+    _win,
+    _coreInitted,
+    _stripExp = /(?:\r|\n|\t\t)/g,
+    //find carriage returns, new line feeds and double-tabs.
+_multipleSpacesExp = /(?:\s\s+)/g,
+    _initCore = function _initCore() {
+  _doc = document;
+  _win = window;
+  _coreInitted = 1;
+},
+    _bonusValidated = 1,
+    //<name>SplitText</name>
+_getComputedStyle = function _getComputedStyle(element) {
+  return _win.getComputedStyle(element);
+},
+    _isArray = Array.isArray,
+    _slice = [].slice,
+    _toArray = function _toArray(value, leaveStrings) {
+  //takes any value and returns an array. If it's a string (and leaveStrings isn't true), it'll use document.querySelectorAll() and convert that to an array. It'll also accept iterables like jQuery objects.
+  var type;
+  return _isArray(value) ? value : (type = typeof value) === "string" && !leaveStrings && value ? _slice.call(_doc.querySelectorAll(value), 0) : value && type === "object" && "length" in value ? _slice.call(value, 0) : value ? [value] : [];
+},
+    _isAbsolute = function _isAbsolute(vars) {
+  return vars.position === "absolute" || vars.absolute === true;
+},
+    //some characters are combining marks (think diacritics/accents in European languages) which involve 2 or 4 characters that combine in the browser to form a single character. Pass in the remaining text and an array of the special characters to search for and if the text starts with one of those special characters, it'll spit back the number of characters to retain (often 2 or 4). Used in the specialChars features that was introduced in 0.6.0.
+_findSpecialChars = function _findSpecialChars(text, chars) {
+  var i = chars.length,
+      s;
+
+  while (--i > -1) {
+    s = chars[i];
+
+    if (text.substr(0, s.length) === s) {
+      return s.length;
+    }
+  }
+},
+    _divStart = " style='position:relative;display:inline-block;'",
+    _cssClassFunc = function _cssClassFunc(cssClass, tag) {
+  if (cssClass === void 0) {
+    cssClass = "";
+  }
+
+  var iterate = ~cssClass.indexOf("++"),
+      num = 1;
+
+  if (iterate) {
+    cssClass = cssClass.split("++").join("");
+  }
+
+  return function () {
+    return "<" + tag + _divStart + (cssClass ? " class='" + cssClass + (iterate ? num++ : "") + "'>" : ">");
+  };
+},
+    _swapText = function _swapText(element, oldText, newText) {
+  var type = element.nodeType;
+
+  if (type === 1 || type === 9 || type === 11) {
+    for (element = element.firstChild; element; element = element.nextSibling) {
+      _swapText(element, oldText, newText);
+    }
+  } else if (type === 3 || type === 4) {
+    element.nodeValue = element.nodeValue.split(oldText).join(newText);
+  }
+},
+    _pushReversed = function _pushReversed(a, merge) {
+  var i = merge.length;
+
+  while (--i > -1) {
+    a.push(merge[i]);
+  }
+},
+    _isBeforeWordDelimiter = function _isBeforeWordDelimiter(e, root, wordDelimiter) {
+  var next;
+
+  while (e && e !== root) {
+    next = e._next || e.nextSibling;
+
+    if (next) {
+      return next.textContent.charAt(0) === wordDelimiter;
+    }
+
+    e = e.parentNode || e._parent;
+  }
+},
+    _deWordify = function _deWordify(e) {
+  var children = _toArray(e.childNodes),
+      l = children.length,
+      i,
+      child;
+
+  for (i = 0; i < l; i++) {
+    child = children[i];
+
+    if (child._isSplit) {
+      _deWordify(child);
+    } else {
+      if (i && child.previousSibling.nodeType === 3) {
+        child.previousSibling.nodeValue += child.nodeType === 3 ? child.nodeValue : child.firstChild.nodeValue;
+      } else if (child.nodeType !== 3) {
+        e.insertBefore(child.firstChild, child);
+      }
+
+      e.removeChild(child);
+    }
+  }
+},
+    _getStyleAsNumber = function _getStyleAsNumber(name, computedStyle) {
+  return parseFloat(computedStyle[name]) || 0;
+},
+    _setPositionsAfterSplit = function _setPositionsAfterSplit(element, vars, allChars, allWords, allLines, origWidth, origHeight) {
+  var cs = _getComputedStyle(element),
+      paddingLeft = _getStyleAsNumber("paddingLeft", cs),
+      lineOffsetY = -999,
+      borderTopAndBottom = _getStyleAsNumber("borderBottomWidth", cs) + _getStyleAsNumber("borderTopWidth", cs),
+      borderLeftAndRight = _getStyleAsNumber("borderLeftWidth", cs) + _getStyleAsNumber("borderRightWidth", cs),
+      padTopAndBottom = _getStyleAsNumber("paddingTop", cs) + _getStyleAsNumber("paddingBottom", cs),
+      padLeftAndRight = _getStyleAsNumber("paddingLeft", cs) + _getStyleAsNumber("paddingRight", cs),
+      lineThreshold = _getStyleAsNumber("fontSize", cs) * (vars.lineThreshold || 0.2),
+      textAlign = cs.textAlign,
+      charArray = [],
+      wordArray = [],
+      lineArray = [],
+      wordDelimiter = vars.wordDelimiter || " ",
+      tag = vars.tag ? vars.tag : vars.span ? "span" : "div",
+      types = vars.type || vars.split || "chars,words,lines",
+      lines = allLines && ~types.indexOf("lines") ? [] : null,
+      words = ~types.indexOf("words"),
+      chars = ~types.indexOf("chars"),
+      absolute = _isAbsolute(vars),
+      linesClass = vars.linesClass,
+      iterateLine = ~(linesClass || "").indexOf("++"),
+      spaceNodesToRemove = [],
+      i,
+      j,
+      l,
+      node,
+      nodes,
+      isChild,
+      curLine,
+      addWordSpaces,
+      style,
+      lineNode,
+      lineWidth,
+      offset;
+
+  if (iterateLine) {
+    linesClass = linesClass.split("++").join("");
+  } //copy all the descendant nodes into an array (we can't use a regular nodeList because it's live and we may need to renest things)
+
+
+  j = element.getElementsByTagName("*");
+  l = j.length;
+  nodes = [];
+
+  for (i = 0; i < l; i++) {
+    nodes[i] = j[i];
+  } //for absolute positioning, we need to record the x/y offsets and width/height for every <div>. And even if we're not positioning things absolutely, in order to accommodate lines, we must figure out where the y offset changes so that we can sense where the lines break, and we populate the lines array.
+
+
+  if (lines || absolute) {
+    for (i = 0; i < l; i++) {
+      node = nodes[i];
+      isChild = node.parentNode === element;
+
+      if (isChild || absolute || chars && !words) {
+        offset = node.offsetTop;
+
+        if (lines && isChild && Math.abs(offset - lineOffsetY) > lineThreshold && (node.nodeName !== "BR" || i === 0)) {
+          //we found some rare occasions where a certain character like &#8209; could cause the offsetTop to be off by 1 pixel, so we build in a threshold.
+          curLine = [];
+          lines.push(curLine);
+          lineOffsetY = offset;
+        }
+
+        if (absolute) {
+          //record offset x and y, as well as width and height so that we can access them later for positioning. Grabbing them at once ensures we don't trigger a browser paint & we maximize performance.
+          node._x = node.offsetLeft;
+          node._y = offset;
+          node._w = node.offsetWidth;
+          node._h = node.offsetHeight;
+        }
+
+        if (lines) {
+          if (node._isSplit && isChild || !chars && isChild || words && isChild || !words && node.parentNode.parentNode === element && !node.parentNode._isSplit) {
+            curLine.push(node);
+            node._x -= paddingLeft;
+
+            if (_isBeforeWordDelimiter(node, element, wordDelimiter)) {
+              node._wordEnd = true;
+            }
+          }
+
+          if (node.nodeName === "BR" && (node.nextSibling && node.nextSibling.nodeName === "BR" || i === 0)) {
+            //two consecutive <br> tags signify a new [empty] line. Also, if the entire block of content STARTS with a <br>, add a line.
+            lines.push([]);
+          }
+        }
+      }
+    }
+  }
+
+  for (i = 0; i < l; i++) {
+    node = nodes[i];
+    isChild = node.parentNode === element;
+
+    if (node.nodeName === "BR") {
+      if (lines || absolute) {
+        node.parentNode && node.parentNode.removeChild(node);
+        nodes.splice(i--, 1);
+        l--;
+      } else if (!words) {
+        element.appendChild(node);
+      }
+
+      continue;
+    }
+
+    if (absolute) {
+      style = node.style;
+
+      if (!words && !isChild) {
+        node._x += node.parentNode._x;
+        node._y += node.parentNode._y;
+      }
+
+      style.left = node._x + "px";
+      style.top = node._y + "px";
+      style.position = "absolute";
+      style.display = "block"; //if we don't set the width/height, things collapse in older versions of IE and the origin for transforms is thrown off in all browsers.
+
+      style.width = node._w + 1 + "px"; //IE is 1px short sometimes. Avoid wrapping
+
+      style.height = node._h + "px";
+    }
+
+    if (!words && chars) {
+      //we always start out wrapping words in their own <div> so that line breaks happen correctly, but here we'll remove those <div> tags if necessary and renest the characters directly into the element rather than inside the word <div>
+      if (node._isSplit) {
+        node._next = node.nextSibling;
+        node.parentNode.appendChild(node); //put it at the end to keep the order correct.
+      } else if (node.parentNode._isSplit) {
+        node._parent = node.parentNode;
+
+        if (!node.previousSibling && node.firstChild) {
+          node.firstChild._isFirst = true;
+        }
+
+        if (node.nextSibling && node.nextSibling.textContent === " " && !node.nextSibling.nextSibling) {
+          //if the last node inside a nested element is just a space (like T<span>nested </span>), remove it otherwise it'll get placed in the wrong order. Don't remove it right away, though, because we need to sense when words/characters are before a space like _isBeforeWordDelimiter(). Removing it now would make that a false negative.
+          spaceNodesToRemove.push(node.nextSibling);
+        }
+
+        node._next = node.nextSibling && node.nextSibling._isFirst ? null : node.nextSibling;
+        node.parentNode.removeChild(node);
+        nodes.splice(i--, 1);
+        l--;
+      } else if (!isChild) {
+        offset = !node.nextSibling && _isBeforeWordDelimiter(node.parentNode, element, wordDelimiter); //if this is the last letter in the word (and we're not breaking by lines and not positioning things absolutely), we need to add a space afterwards so that the characters don't just mash together
+
+        if (node.parentNode._parent) {
+          node.parentNode._parent.appendChild(node);
+        }
+
+        offset && node.parentNode.appendChild(_doc.createTextNode(" "));
+
+        if (tag === "span") {
+          node.style.display = "inline"; //so that word breaks are honored properly.
+        }
+
+        charArray.push(node);
+      }
+    } else if (node.parentNode._isSplit && !node._isSplit && node.innerHTML !== "") {
+      wordArray.push(node);
+    } else if (chars && !node._isSplit) {
+      if (tag === "span") {
+        node.style.display = "inline";
+      }
+
+      charArray.push(node);
+    }
+  }
+
+  i = spaceNodesToRemove.length;
+
+  while (--i > -1) {
+    spaceNodesToRemove[i].parentNode.removeChild(spaceNodesToRemove[i]);
+  }
+
+  if (lines) {
+    //the next 7 lines just give us the line width in the most reliable way and figure out the left offset (if position isn't relative or absolute). We must set the width along with text-align to ensure everything works properly for various alignments.
+    if (absolute) {
+      lineNode = _doc.createElement(tag);
+      element.appendChild(lineNode);
+      lineWidth = lineNode.offsetWidth + "px";
+      offset = lineNode.offsetParent === element ? 0 : element.offsetLeft;
+      element.removeChild(lineNode);
+    }
+
+    style = element.style.cssText;
+    element.style.cssText = "display:none;"; //to improve performance, set display:none on the element so that the browser doesn't have to worry about reflowing or rendering while we're renesting things. We'll revert the cssText later.
+    //we can't use element.innerHTML = "" because that causes IE to literally delete all the nodes and their content even though we've stored them in an array! So we must loop through the children and remove them.
+
+    while (element.firstChild) {
+      element.removeChild(element.firstChild);
+    }
+
+    addWordSpaces = wordDelimiter === " " && (!absolute || !words && !chars);
+
+    for (i = 0; i < lines.length; i++) {
+      curLine = lines[i];
+      lineNode = _doc.createElement(tag);
+      lineNode.style.cssText = "display:block;text-align:" + textAlign + ";position:" + (absolute ? "absolute;" : "relative;");
+
+      if (linesClass) {
+        lineNode.className = linesClass + (iterateLine ? i + 1 : "");
+      }
+
+      lineArray.push(lineNode);
+      l = curLine.length;
+
+      for (j = 0; j < l; j++) {
+        if (curLine[j].nodeName !== "BR") {
+          node = curLine[j];
+          lineNode.appendChild(node);
+          addWordSpaces && node._wordEnd && lineNode.appendChild(_doc.createTextNode(" "));
+
+          if (absolute) {
+            if (j === 0) {
+              lineNode.style.top = node._y + "px";
+              lineNode.style.left = paddingLeft + offset + "px";
+            }
+
+            node.style.top = "0px";
+
+            if (offset) {
+              node.style.left = node._x - offset + "px";
+            }
+          }
+        }
+      }
+
+      if (l === 0) {
+        //if there are no nodes in the line (typically meaning there were two consecutive <br> tags, just add a non-breaking space so that things display properly.
+        lineNode.innerHTML = "&nbsp;";
+      } else if (!words && !chars) {
+        _deWordify(lineNode);
+
+        _swapText(lineNode, String.fromCharCode(160), " ");
+      }
+
+      if (absolute) {
+        lineNode.style.width = lineWidth;
+        lineNode.style.height = node._h + "px";
+      }
+
+      element.appendChild(lineNode);
+    }
+
+    element.style.cssText = style;
+  } //if everything shifts to being position:absolute, the container can collapse in terms of height or width, so fix that here.
+
+
+  if (absolute) {
+    if (origHeight > element.clientHeight) {
+      element.style.height = origHeight - padTopAndBottom + "px";
+
+      if (element.clientHeight < origHeight) {
+        //IE8 and earlier use a different box model - we must include padding and borders
+        element.style.height = origHeight + borderTopAndBottom + "px";
+      }
+    }
+
+    if (origWidth > element.clientWidth) {
+      element.style.width = origWidth - padLeftAndRight + "px";
+
+      if (element.clientWidth < origWidth) {
+        //IE8 and earlier use a different box model - we must include padding and borders
+        element.style.width = origWidth + borderLeftAndRight + "px";
+      }
+    }
+  }
+
+  _pushReversed(allChars, charArray);
+
+  if (words) {
+    _pushReversed(allWords, wordArray);
+  }
+
+  _pushReversed(allLines, lineArray);
+},
+    _splitRawText = function _splitRawText(element, vars, wordStart, charStart) {
+  var tag = vars.tag ? vars.tag : vars.span ? "span" : "div",
+      types = vars.type || vars.split || "chars,words,lines",
+      //words = (types.indexOf("words") !== -1),
+  chars = ~types.indexOf("chars"),
+      absolute = _isAbsolute(vars),
+      wordDelimiter = vars.wordDelimiter || " ",
+      space = wordDelimiter !== " " ? "" : absolute ? "&#173; " : " ",
+      wordEnd = "</" + tag + ">",
+      wordIsOpen = 1,
+      specialChars = vars.specialChars ? typeof vars.specialChars === "function" ? vars.specialChars : _findSpecialChars : null,
+      //specialChars can be an array or a function. For performance reasons, we always set this local "specialChars" to a function to which we pass the remaining text and whatever the original vars.specialChars was so that if it's an array, it works with the _findSpecialChars() function.
+  text,
+      splitText,
+      i,
+      j,
+      l,
+      character,
+      hasTagStart,
+      testResult,
+      container = _doc.createElement("div"),
+      parent = element.parentNode;
+
+  parent.insertBefore(container, element);
+  container.textContent = element.nodeValue;
+  parent.removeChild(element);
+  element = container;
+  text = (0, _strings.getText)(element);
+  hasTagStart = text.indexOf("<") !== -1;
+
+  if (vars.reduceWhiteSpace !== false) {
+    text = text.replace(_multipleSpacesExp, " ").replace(_stripExp, "");
+  }
+
+  if (hasTagStart) {
+    text = text.split("<").join("{{LT}}"); //we can't leave "<" in the string, or when we set the innerHTML, it can be interpreted as a node
+  }
+
+  l = text.length;
+  splitText = (text.charAt(0) === " " ? space : "") + wordStart();
+
+  for (i = 0; i < l; i++) {
+    character = text.charAt(i);
+
+    if (specialChars && (testResult = specialChars(text.substr(i), vars.specialChars))) {
+      // look for any specialChars that were declared. Remember, they can be passed in like {specialChars:["मी", "पा", "है"]} or a function could be defined instead. Either way, the function should return the number of characters that should be grouped together for this "character".
+      character = text.substr(i, testResult || 1);
+      splitText += chars && character !== " " ? charStart() + character + "</" + tag + ">" : character;
+      i += testResult - 1;
+    } else if (character === wordDelimiter && text.charAt(i - 1) !== wordDelimiter && i) {
+      splitText += wordIsOpen ? wordEnd : "";
+      wordIsOpen = 0;
+
+      while (text.charAt(i + 1) === wordDelimiter) {
+        //skip over empty spaces (to avoid making them words)
+        splitText += space;
+        i++;
+      }
+
+      if (i === l - 1) {
+        splitText += space;
+      } else if (text.charAt(i + 1) !== ")") {
+        splitText += space + wordStart();
+        wordIsOpen = 1;
+      }
+    } else if (character === "{" && text.substr(i, 6) === "{{LT}}") {
+      splitText += chars ? charStart() + "{{LT}}" + "</" + tag + ">" : "{{LT}}";
+      i += 5;
+    } else if (character.charCodeAt(0) >= 0xD800 && character.charCodeAt(0) <= 0xDBFF || text.charCodeAt(i + 1) >= 0xFE00 && text.charCodeAt(i + 1) <= 0xFE0F) {
+      //special emoji characters use 2 or 4 unicode characters that we must keep together.
+      j = ((text.substr(i, 12).split(_strings.emojiExp) || [])[1] || "").length || 2;
+      splitText += chars && character !== " " ? charStart() + text.substr(i, j) + "</" + tag + ">" : text.substr(i, j);
+      i += j - 1;
+    } else {
+      splitText += chars && character !== " " ? charStart() + character + "</" + tag + ">" : character;
+    }
+  }
+
+  element.outerHTML = splitText + (wordIsOpen ? wordEnd : "");
+
+  if (hasTagStart) {
+    _swapText(parent, "{{LT}}", "<"); //note: don't perform this on "element" because that gets replaced with all new elements when we set element.outerHTML.
+
+  }
+},
+    _split = function _split(element, vars, wordStart, charStart) {
+  var children = _toArray(element.childNodes),
+      l = children.length,
+      absolute = _isAbsolute(vars),
+      i,
+      child;
+
+  if (element.nodeType !== 3 || l > 1) {
+    vars.absolute = false;
+
+    for (i = 0; i < l; i++) {
+      child = children[i];
+
+      if (child.nodeType !== 3 || /\S+/.test(child.nodeValue)) {
+        if (absolute && child.nodeType !== 3 && _getComputedStyle(child).display === "inline") {
+          //if there's a child node that's display:inline, switch it to inline-block so that absolute positioning works properly (most browsers don't report offsetTop/offsetLeft properly inside a <span> for example)
+          child.style.display = "inline-block";
+          child.style.position = "relative";
+        }
+
+        child._isSplit = true;
+
+        _split(child, vars, wordStart, charStart); //don't split lines on child elements
+
+      }
+    }
+
+    vars.absolute = absolute;
+    element._isSplit = true;
+    return;
+  }
+
+  _splitRawText(element, vars, wordStart, charStart);
+};
+
+var SplitText = /*#__PURE__*/function () {
+  function SplitText(element, vars) {
+    _coreInitted || _initCore();
+    this.elements = _toArray(element);
+    this.chars = [];
+    this.words = [];
+    this.lines = [];
+    this._originals = [];
+    this.vars = vars || {};
+    _bonusValidated && this.split(vars);
+  }
+
+  var _proto = SplitText.prototype;
+
+  _proto.split = function split(vars) {
+    this.isSplit && this.revert();
+    this.vars = vars = vars || this.vars;
+    this._originals.length = this.chars.length = this.words.length = this.lines.length = 0;
+
+    var i = this.elements.length,
+        tag = vars.tag ? vars.tag : vars.span ? "span" : "div",
+        wordStart = _cssClassFunc(vars.wordsClass, tag),
+        charStart = _cssClassFunc(vars.charsClass, tag),
+        origHeight,
+        origWidth,
+        e; //we split in reversed order so that if/when we position:absolute elements, they don't affect the position of the ones after them in the document flow (shifting them up as they're taken out of the document flow).
+
+
+    while (--i > -1) {
+      e = this.elements[i];
+      this._originals[i] = e.innerHTML;
+      origHeight = e.clientHeight;
+      origWidth = e.clientWidth;
+
+      _split(e, vars, wordStart, charStart);
+
+      _setPositionsAfterSplit(e, vars, this.chars, this.words, this.lines, origWidth, origHeight);
+    }
+
+    this.chars.reverse();
+    this.words.reverse();
+    this.lines.reverse();
+    this.isSplit = true;
+    return this;
+  };
+
+  _proto.revert = function revert() {
+    var originals = this._originals;
+
+    if (!originals) {
+      throw "revert() call wasn't scoped properly.";
+    }
+
+    this.elements.forEach(function (e, i) {
+      return e.innerHTML = originals[i];
+    });
+    this.chars = [];
+    this.words = [];
+    this.lines = [];
+    this.isSplit = false;
+    return this;
+  };
+
+  SplitText.create = function create(element, vars) {
+    return new SplitText(element, vars);
+  };
+
+  return SplitText;
+}();
+
+exports.default = exports.SplitText = SplitText;
+SplitText.version = "3.5.1";
+},{"./utils/strings.js":"node_modules/gsap/utils/strings.js"}],"node_modules/three/build/three.module.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -42857,1032 +43315,839 @@ if (typeof __THREE_DEVTOOLS__ !== 'undefined') {
   /* eslint-enable no-undef */
 
 }
-},{}],"node_modules/three-orbit-controls/index.js":[function(require,module,exports) {
-module.exports = function( THREE ) {
-	/**
-	 * @author qiao / https://github.com/qiao
-	 * @author mrdoob / http://mrdoob.com
-	 * @author alteredq / http://alteredqualia.com/
-	 * @author WestLangley / http://github.com/WestLangley
-	 * @author erich666 / http://erichaines.com
-	 */
+},{}],"node_modules/three/examples/jsm/controls/OrbitControls.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.MapControls = exports.OrbitControls = void 0;
+
+var _threeModule = require("../../../build/three.module.js");
 
 // This set of controls performs orbiting, dollying (zooming), and panning.
 // Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
 //
-//    Orbit - left mouse / touch: one finger move
-//    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
-//    Pan - right mouse, or arrow keys / touch: three finter swipe
-
-	function OrbitControls( object, domElement ) {
-
-		this.object = object;
-
-		this.domElement = ( domElement !== undefined ) ? domElement : document;
-
-		// Set to false to disable this control
-		this.enabled = true;
-
-		// "target" sets the location of focus, where the object orbits around
-		this.target = new THREE.Vector3();
-
-		// How far you can dolly in and out ( PerspectiveCamera only )
-		this.minDistance = 0;
-		this.maxDistance = Infinity;
-
-		// How far you can zoom in and out ( OrthographicCamera only )
-		this.minZoom = 0;
-		this.maxZoom = Infinity;
-
-		// How far you can orbit vertically, upper and lower limits.
-		// Range is 0 to Math.PI radians.
-		this.minPolarAngle = 0; // radians
-		this.maxPolarAngle = Math.PI; // radians
-
-		// How far you can orbit horizontally, upper and lower limits.
-		// If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
-		this.minAzimuthAngle = - Infinity; // radians
-		this.maxAzimuthAngle = Infinity; // radians
-
-		// Set to true to enable damping (inertia)
-		// If damping is enabled, you must call controls.update() in your animation loop
-		this.enableDamping = false;
-		this.dampingFactor = 0.25;
-
-		// This option actually enables dollying in and out; left as "zoom" for backwards compatibility.
-		// Set to false to disable zooming
-		this.enableZoom = true;
-		this.zoomSpeed = 1.0;
-
-		// Set to false to disable rotating
-		this.enableRotate = true;
-		this.rotateSpeed = 1.0;
-
-		// Set to false to disable panning
-		this.enablePan = true;
-		this.keyPanSpeed = 7.0;	// pixels moved per arrow key push
-
-		// Set to true to automatically rotate around the target
-		// If auto-rotate is enabled, you must call controls.update() in your animation loop
-		this.autoRotate = false;
-		this.autoRotateSpeed = 2.0; // 30 seconds per round when fps is 60
-
-		// Set to false to disable use of the keys
-		this.enableKeys = true;
-
-		// The four arrow keys
-		this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
-
-		// Mouse buttons
-		this.mouseButtons = { ORBIT: THREE.MOUSE.LEFT, ZOOM: THREE.MOUSE.MIDDLE, PAN: THREE.MOUSE.RIGHT };
-
-		// for reset
-		this.target0 = this.target.clone();
-		this.position0 = this.object.position.clone();
-		this.zoom0 = this.object.zoom;
-
-		//
-		// public methods
-		//
-
-		this.getPolarAngle = function () {
-
-			return spherical.phi;
-
-		};
-
-		this.getAzimuthalAngle = function () {
-
-			return spherical.theta;
-
-		};
-
-		this.reset = function () {
-
-			scope.target.copy( scope.target0 );
-			scope.object.position.copy( scope.position0 );
-			scope.object.zoom = scope.zoom0;
-
-			scope.object.updateProjectionMatrix();
-			scope.dispatchEvent( changeEvent );
-
-			scope.update();
-
-			state = STATE.NONE;
-
-		};
-
-		// this method is exposed, but perhaps it would be better if we can make it private...
-		this.update = function() {
-
-			var offset = new THREE.Vector3();
-
-			// so camera.up is the orbit axis
-			var quat = new THREE.Quaternion().setFromUnitVectors( object.up, new THREE.Vector3( 0, 1, 0 ) );
-			var quatInverse = quat.clone().inverse();
-
-			var lastPosition = new THREE.Vector3();
-			var lastQuaternion = new THREE.Quaternion();
-
-			return function update () {
-
-				var position = scope.object.position;
-
-				offset.copy( position ).sub( scope.target );
-
-				// rotate offset to "y-axis-is-up" space
-				offset.applyQuaternion( quat );
-
-				// angle from z-axis around y-axis
-				spherical.setFromVector3( offset );
-
-				if ( scope.autoRotate && state === STATE.NONE ) {
-
-					rotateLeft( getAutoRotationAngle() );
-
-				}
-
-				spherical.theta += sphericalDelta.theta;
-				spherical.phi += sphericalDelta.phi;
-
-				// restrict theta to be between desired limits
-				spherical.theta = Math.max( scope.minAzimuthAngle, Math.min( scope.maxAzimuthAngle, spherical.theta ) );
-
-				// restrict phi to be between desired limits
-				spherical.phi = Math.max( scope.minPolarAngle, Math.min( scope.maxPolarAngle, spherical.phi ) );
-
-				spherical.makeSafe();
-
-
-				spherical.radius *= scale;
-
-				// restrict radius to be between desired limits
-				spherical.radius = Math.max( scope.minDistance, Math.min( scope.maxDistance, spherical.radius ) );
-
-				// move target to panned location
-				scope.target.add( panOffset );
-
-				offset.setFromSpherical( spherical );
-
-				// rotate offset back to "camera-up-vector-is-up" space
-				offset.applyQuaternion( quatInverse );
-
-				position.copy( scope.target ).add( offset );
-
-				scope.object.lookAt( scope.target );
-
-				if ( scope.enableDamping === true ) {
-
-					sphericalDelta.theta *= ( 1 - scope.dampingFactor );
-					sphericalDelta.phi *= ( 1 - scope.dampingFactor );
-
-				} else {
-
-					sphericalDelta.set( 0, 0, 0 );
-
-				}
-
-				scale = 1;
-				panOffset.set( 0, 0, 0 );
-
-				// update condition is:
-				// min(camera displacement, camera rotation in radians)^2 > EPS
-				// using small-angle approximation cos(x/2) = 1 - x^2 / 8
-
-				if ( zoomChanged ||
-					lastPosition.distanceToSquared( scope.object.position ) > EPS ||
-					8 * ( 1 - lastQuaternion.dot( scope.object.quaternion ) ) > EPS ) {
-
-					scope.dispatchEvent( changeEvent );
-
-					lastPosition.copy( scope.object.position );
-					lastQuaternion.copy( scope.object.quaternion );
-					zoomChanged = false;
-
-					return true;
-
-				}
-
-				return false;
-
-			};
-
-		}();
-
-		this.dispose = function() {
-
-			scope.domElement.removeEventListener( 'contextmenu', onContextMenu, false );
-			scope.domElement.removeEventListener( 'mousedown', onMouseDown, false );
-			scope.domElement.removeEventListener( 'wheel', onMouseWheel, false );
-
-			scope.domElement.removeEventListener( 'touchstart', onTouchStart, false );
-			scope.domElement.removeEventListener( 'touchend', onTouchEnd, false );
-			scope.domElement.removeEventListener( 'touchmove', onTouchMove, false );
-
-			document.removeEventListener( 'mousemove', onMouseMove, false );
-			document.removeEventListener( 'mouseup', onMouseUp, false );
-
-			window.removeEventListener( 'keydown', onKeyDown, false );
-
-			//scope.dispatchEvent( { type: 'dispose' } ); // should this be added here?
-
-		};
-
-		//
-		// internals
-		//
-
-		var scope = this;
-
-		var changeEvent = { type: 'change' };
-		var startEvent = { type: 'start' };
-		var endEvent = { type: 'end' };
-
-		var STATE = { NONE : - 1, ROTATE : 0, DOLLY : 1, PAN : 2, TOUCH_ROTATE : 3, TOUCH_DOLLY : 4, TOUCH_PAN : 5 };
-
-		var state = STATE.NONE;
-
-		var EPS = 0.000001;
-
-		// current position in spherical coordinates
-		var spherical = new THREE.Spherical();
-		var sphericalDelta = new THREE.Spherical();
-
-		var scale = 1;
-		var panOffset = new THREE.Vector3();
-		var zoomChanged = false;
-
-		var rotateStart = new THREE.Vector2();
-		var rotateEnd = new THREE.Vector2();
-		var rotateDelta = new THREE.Vector2();
-
-		var panStart = new THREE.Vector2();
-		var panEnd = new THREE.Vector2();
-		var panDelta = new THREE.Vector2();
-
-		var dollyStart = new THREE.Vector2();
-		var dollyEnd = new THREE.Vector2();
-		var dollyDelta = new THREE.Vector2();
-
-		function getAutoRotationAngle() {
-
-			return 2 * Math.PI / 60 / 60 * scope.autoRotateSpeed;
-
-		}
-
-		function getZoomScale() {
-
-			return Math.pow( 0.95, scope.zoomSpeed );
-
-		}
-
-		function rotateLeft( angle ) {
-
-			sphericalDelta.theta -= angle;
-
-		}
-
-		function rotateUp( angle ) {
-
-			sphericalDelta.phi -= angle;
-
-		}
-
-		var panLeft = function() {
-
-			var v = new THREE.Vector3();
-
-			return function panLeft( distance, objectMatrix ) {
-
-				v.setFromMatrixColumn( objectMatrix, 0 ); // get X column of objectMatrix
-				v.multiplyScalar( - distance );
-
-				panOffset.add( v );
-
-			};
-
-		}();
-
-		var panUp = function() {
-
-			var v = new THREE.Vector3();
-
-			return function panUp( distance, objectMatrix ) {
-
-				v.setFromMatrixColumn( objectMatrix, 1 ); // get Y column of objectMatrix
-				v.multiplyScalar( distance );
-
-				panOffset.add( v );
-
-			};
-
-		}();
-
-		// deltaX and deltaY are in pixels; right and down are positive
-		var pan = function() {
-
-			var offset = new THREE.Vector3();
-
-			return function pan ( deltaX, deltaY ) {
-
-				var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
-
-				if ( scope.object instanceof THREE.PerspectiveCamera ) {
-
-					// perspective
-					var position = scope.object.position;
-					offset.copy( position ).sub( scope.target );
-					var targetDistance = offset.length();
-
-					// half of the fov is center to top of screen
-					targetDistance *= Math.tan( ( scope.object.fov / 2 ) * Math.PI / 180.0 );
-
-					// we actually don't use screenWidth, since perspective camera is fixed to screen height
-					panLeft( 2 * deltaX * targetDistance / element.clientHeight, scope.object.matrix );
-					panUp( 2 * deltaY * targetDistance / element.clientHeight, scope.object.matrix );
-
-				} else if ( scope.object instanceof THREE.OrthographicCamera ) {
-
-					// orthographic
-					panLeft( deltaX * ( scope.object.right - scope.object.left ) / scope.object.zoom / element.clientWidth, scope.object.matrix );
-					panUp( deltaY * ( scope.object.top - scope.object.bottom ) / scope.object.zoom / element.clientHeight, scope.object.matrix );
-
-				} else {
-
-					// camera neither orthographic nor perspective
-					console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - pan disabled.' );
-					scope.enablePan = false;
-
-				}
-
-			};
-
-		}();
-
-		function dollyIn( dollyScale ) {
-
-			if ( scope.object instanceof THREE.PerspectiveCamera ) {
-
-				scale /= dollyScale;
-
-			} else if ( scope.object instanceof THREE.OrthographicCamera ) {
-
-				scope.object.zoom = Math.max( scope.minZoom, Math.min( scope.maxZoom, scope.object.zoom * dollyScale ) );
-				scope.object.updateProjectionMatrix();
-				zoomChanged = true;
-
-			} else {
-
-				console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.' );
-				scope.enableZoom = false;
-
-			}
-
-		}
-
-		function dollyOut( dollyScale ) {
-
-			if ( scope.object instanceof THREE.PerspectiveCamera ) {
-
-				scale *= dollyScale;
-
-			} else if ( scope.object instanceof THREE.OrthographicCamera ) {
-
-				scope.object.zoom = Math.max( scope.minZoom, Math.min( scope.maxZoom, scope.object.zoom / dollyScale ) );
-				scope.object.updateProjectionMatrix();
-				zoomChanged = true;
-
-			} else {
-
-				console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.' );
-				scope.enableZoom = false;
-
-			}
-
-		}
-
-		//
-		// event callbacks - update the object state
-		//
-
-		function handleMouseDownRotate( event ) {
-
-			//console.log( 'handleMouseDownRotate' );
-
-			rotateStart.set( event.clientX, event.clientY );
-
-		}
-
-		function handleMouseDownDolly( event ) {
-
-			//console.log( 'handleMouseDownDolly' );
-
-			dollyStart.set( event.clientX, event.clientY );
-
-		}
-
-		function handleMouseDownPan( event ) {
-
-			//console.log( 'handleMouseDownPan' );
-
-			panStart.set( event.clientX, event.clientY );
-
-		}
-
-		function handleMouseMoveRotate( event ) {
-
-			//console.log( 'handleMouseMoveRotate' );
-
-			rotateEnd.set( event.clientX, event.clientY );
-			rotateDelta.subVectors( rotateEnd, rotateStart );
-
-			var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
-
-			// rotating across whole screen goes 360 degrees around
-			rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientWidth * scope.rotateSpeed );
-
-			// rotating up and down along whole screen attempts to go 360, but limited to 180
-			rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed );
-
-			rotateStart.copy( rotateEnd );
-
-			scope.update();
-
-		}
-
-		function handleMouseMoveDolly( event ) {
-
-			//console.log( 'handleMouseMoveDolly' );
-
-			dollyEnd.set( event.clientX, event.clientY );
-
-			dollyDelta.subVectors( dollyEnd, dollyStart );
-
-			if ( dollyDelta.y > 0 ) {
-
-				dollyIn( getZoomScale() );
-
-			} else if ( dollyDelta.y < 0 ) {
-
-				dollyOut( getZoomScale() );
-
-			}
-
-			dollyStart.copy( dollyEnd );
-
-			scope.update();
-
-		}
-
-		function handleMouseMovePan( event ) {
-
-			//console.log( 'handleMouseMovePan' );
-
-			panEnd.set( event.clientX, event.clientY );
-
-			panDelta.subVectors( panEnd, panStart );
-
-			pan( panDelta.x, panDelta.y );
-
-			panStart.copy( panEnd );
-
-			scope.update();
-
-		}
-
-		function handleMouseUp( event ) {
-
-			//console.log( 'handleMouseUp' );
-
-		}
-
-		function handleMouseWheel( event ) {
-
-			//console.log( 'handleMouseWheel' );
-
-			if ( event.deltaY < 0 ) {
-
-				dollyOut( getZoomScale() );
-
-			} else if ( event.deltaY > 0 ) {
-
-				dollyIn( getZoomScale() );
-
-			}
-
-			scope.update();
-
-		}
-
-		function handleKeyDown( event ) {
-
-			//console.log( 'handleKeyDown' );
-
-			switch ( event.keyCode ) {
-
-				case scope.keys.UP:
-					pan( 0, scope.keyPanSpeed );
-					scope.update();
-					break;
-
-				case scope.keys.BOTTOM:
-					pan( 0, - scope.keyPanSpeed );
-					scope.update();
-					break;
-
-				case scope.keys.LEFT:
-					pan( scope.keyPanSpeed, 0 );
-					scope.update();
-					break;
-
-				case scope.keys.RIGHT:
-					pan( - scope.keyPanSpeed, 0 );
-					scope.update();
-					break;
-
-			}
-
-		}
-
-		function handleTouchStartRotate( event ) {
-
-			//console.log( 'handleTouchStartRotate' );
-
-			rotateStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-
-		}
-
-		function handleTouchStartDolly( event ) {
-
-			//console.log( 'handleTouchStartDolly' );
-
-			var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-			var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-
-			var distance = Math.sqrt( dx * dx + dy * dy );
-
-			dollyStart.set( 0, distance );
-
-		}
-
-		function handleTouchStartPan( event ) {
-
-			//console.log( 'handleTouchStartPan' );
-
-			panStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-
-		}
-
-		function handleTouchMoveRotate( event ) {
-
-			//console.log( 'handleTouchMoveRotate' );
-
-			rotateEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-			rotateDelta.subVectors( rotateEnd, rotateStart );
-
-			var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
-
-			// rotating across whole screen goes 360 degrees around
-			rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientWidth * scope.rotateSpeed );
-
-			// rotating up and down along whole screen attempts to go 360, but limited to 180
-			rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed );
-
-			rotateStart.copy( rotateEnd );
-
-			scope.update();
-
-		}
-
-		function handleTouchMoveDolly( event ) {
-
-			//console.log( 'handleTouchMoveDolly' );
-
-			var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-			var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-
-			var distance = Math.sqrt( dx * dx + dy * dy );
-
-			dollyEnd.set( 0, distance );
-
-			dollyDelta.subVectors( dollyEnd, dollyStart );
-
-			if ( dollyDelta.y > 0 ) {
-
-				dollyOut( getZoomScale() );
-
-			} else if ( dollyDelta.y < 0 ) {
-
-				dollyIn( getZoomScale() );
-
-			}
-
-			dollyStart.copy( dollyEnd );
-
-			scope.update();
-
-		}
-
-		function handleTouchMovePan( event ) {
-
-			//console.log( 'handleTouchMovePan' );
-
-			panEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-
-			panDelta.subVectors( panEnd, panStart );
-
-			pan( panDelta.x, panDelta.y );
-
-			panStart.copy( panEnd );
-
-			scope.update();
-
-		}
-
-		function handleTouchEnd( event ) {
-
-			//console.log( 'handleTouchEnd' );
-
-		}
-
-		//
-		// event handlers - FSM: listen for events and reset state
-		//
-
-		function onMouseDown( event ) {
-
-			if ( scope.enabled === false ) return;
-
-			event.preventDefault();
-
-			if ( event.button === scope.mouseButtons.ORBIT ) {
-
-				if ( scope.enableRotate === false ) return;
-
-				handleMouseDownRotate( event );
-
-				state = STATE.ROTATE;
-
-			} else if ( event.button === scope.mouseButtons.ZOOM ) {
-
-				if ( scope.enableZoom === false ) return;
-
-				handleMouseDownDolly( event );
-
-				state = STATE.DOLLY;
-
-			} else if ( event.button === scope.mouseButtons.PAN ) {
-
-				if ( scope.enablePan === false ) return;
-
-				handleMouseDownPan( event );
-
-				state = STATE.PAN;
-
-			}
-
-			if ( state !== STATE.NONE ) {
-
-				document.addEventListener( 'mousemove', onMouseMove, false );
-				document.addEventListener( 'mouseup', onMouseUp, false );
-
-				scope.dispatchEvent( startEvent );
-
-			}
-
-		}
-
-		function onMouseMove( event ) {
-
-			if ( scope.enabled === false ) return;
-
-			event.preventDefault();
-
-			if ( state === STATE.ROTATE ) {
-
-				if ( scope.enableRotate === false ) return;
-
-				handleMouseMoveRotate( event );
-
-			} else if ( state === STATE.DOLLY ) {
-
-				if ( scope.enableZoom === false ) return;
-
-				handleMouseMoveDolly( event );
-
-			} else if ( state === STATE.PAN ) {
-
-				if ( scope.enablePan === false ) return;
-
-				handleMouseMovePan( event );
-
-			}
-
-		}
-
-		function onMouseUp( event ) {
-
-			if ( scope.enabled === false ) return;
-
-			handleMouseUp( event );
-
-			document.removeEventListener( 'mousemove', onMouseMove, false );
-			document.removeEventListener( 'mouseup', onMouseUp, false );
-
-			scope.dispatchEvent( endEvent );
-
-			state = STATE.NONE;
-
-		}
-
-		function onMouseWheel( event ) {
-
-			if ( scope.enabled === false || scope.enableZoom === false || ( state !== STATE.NONE && state !== STATE.ROTATE ) ) return;
-
-			event.preventDefault();
-			event.stopPropagation();
-
-			handleMouseWheel( event );
-
-			scope.dispatchEvent( startEvent ); // not sure why these are here...
-			scope.dispatchEvent( endEvent );
-
-		}
-
-		function onKeyDown( event ) {
-
-			if ( scope.enabled === false || scope.enableKeys === false || scope.enablePan === false ) return;
-
-			handleKeyDown( event );
-
-		}
-
-		function onTouchStart( event ) {
-
-			if ( scope.enabled === false ) return;
-
-			switch ( event.touches.length ) {
-
-				case 1:	// one-fingered touch: rotate
-
-					if ( scope.enableRotate === false ) return;
-
-					handleTouchStartRotate( event );
-
-					state = STATE.TOUCH_ROTATE;
-
-					break;
-
-				case 2:	// two-fingered touch: dolly
-
-					if ( scope.enableZoom === false ) return;
-
-					handleTouchStartDolly( event );
-
-					state = STATE.TOUCH_DOLLY;
-
-					break;
-
-				case 3: // three-fingered touch: pan
-
-					if ( scope.enablePan === false ) return;
-
-					handleTouchStartPan( event );
-
-					state = STATE.TOUCH_PAN;
-
-					break;
-
-				default:
-
-					state = STATE.NONE;
-
-			}
-
-			if ( state !== STATE.NONE ) {
-
-				scope.dispatchEvent( startEvent );
-
-			}
-
-		}
-
-		function onTouchMove( event ) {
-
-			if ( scope.enabled === false ) return;
-
-			event.preventDefault();
-			event.stopPropagation();
-
-			switch ( event.touches.length ) {
-
-				case 1: // one-fingered touch: rotate
-
-					if ( scope.enableRotate === false ) return;
-					if ( state !== STATE.TOUCH_ROTATE ) return; // is this needed?...
-
-					handleTouchMoveRotate( event );
-
-					break;
-
-				case 2: // two-fingered touch: dolly
-
-					if ( scope.enableZoom === false ) return;
-					if ( state !== STATE.TOUCH_DOLLY ) return; // is this needed?...
-
-					handleTouchMoveDolly( event );
-
-					break;
-
-				case 3: // three-fingered touch: pan
-
-					if ( scope.enablePan === false ) return;
-					if ( state !== STATE.TOUCH_PAN ) return; // is this needed?...
-
-					handleTouchMovePan( event );
-
-					break;
-
-				default:
-
-					state = STATE.NONE;
-
-			}
-
-		}
-
-		function onTouchEnd( event ) {
-
-			if ( scope.enabled === false ) return;
-
-			handleTouchEnd( event );
-
-			scope.dispatchEvent( endEvent );
-
-			state = STATE.NONE;
-
-		}
-
-		function onContextMenu( event ) {
-
-			event.preventDefault();
-
-		}
-
-		//
-
-		scope.domElement.addEventListener( 'contextmenu', onContextMenu, false );
-
-		scope.domElement.addEventListener( 'mousedown', onMouseDown, false );
-		scope.domElement.addEventListener( 'wheel', onMouseWheel, false );
-
-		scope.domElement.addEventListener( 'touchstart', onTouchStart, false );
-		scope.domElement.addEventListener( 'touchend', onTouchEnd, false );
-		scope.domElement.addEventListener( 'touchmove', onTouchMove, false );
-
-		window.addEventListener( 'keydown', onKeyDown, false );
-
-		// force an update at start
-
-		this.update();
-
-	};
-
-	OrbitControls.prototype = Object.create( THREE.EventDispatcher.prototype );
-	OrbitControls.prototype.constructor = OrbitControls;
-
-	Object.defineProperties( OrbitControls.prototype, {
-
-		center: {
-
-			get: function () {
-
-				console.warn( 'THREE.OrbitControls: .center has been renamed to .target' );
-				return this.target;
-
-			}
-
-		},
-
-		// backward compatibility
-
-		noZoom: {
-
-			get: function () {
-
-				console.warn( 'THREE.OrbitControls: .noZoom has been deprecated. Use .enableZoom instead.' );
-				return ! this.enableZoom;
-
-			},
-
-			set: function ( value ) {
-
-				console.warn( 'THREE.OrbitControls: .noZoom has been deprecated. Use .enableZoom instead.' );
-				this.enableZoom = ! value;
-
-			}
-
-		},
-
-		noRotate: {
-
-			get: function () {
-
-				console.warn( 'THREE.OrbitControls: .noRotate has been deprecated. Use .enableRotate instead.' );
-				return ! this.enableRotate;
-
-			},
-
-			set: function ( value ) {
-
-				console.warn( 'THREE.OrbitControls: .noRotate has been deprecated. Use .enableRotate instead.' );
-				this.enableRotate = ! value;
-
-			}
-
-		},
-
-		noPan: {
-
-			get: function () {
-
-				console.warn( 'THREE.OrbitControls: .noPan has been deprecated. Use .enablePan instead.' );
-				return ! this.enablePan;
-
-			},
-
-			set: function ( value ) {
-
-				console.warn( 'THREE.OrbitControls: .noPan has been deprecated. Use .enablePan instead.' );
-				this.enablePan = ! value;
-
-			}
-
-		},
-
-		noKeys: {
-
-			get: function () {
-
-				console.warn( 'THREE.OrbitControls: .noKeys has been deprecated. Use .enableKeys instead.' );
-				return ! this.enableKeys;
-
-			},
-
-			set: function ( value ) {
-
-				console.warn( 'THREE.OrbitControls: .noKeys has been deprecated. Use .enableKeys instead.' );
-				this.enableKeys = ! value;
-
-			}
-
-		},
-
-		staticMoving : {
-
-			get: function () {
-
-				console.warn( 'THREE.OrbitControls: .staticMoving has been deprecated. Use .enableDamping instead.' );
-				return ! this.enableDamping;
-
-			},
-
-			set: function ( value ) {
-
-				console.warn( 'THREE.OrbitControls: .staticMoving has been deprecated. Use .enableDamping instead.' );
-				this.enableDamping = ! value;
-
-			}
-
-		},
-
-		dynamicDampingFactor : {
-
-			get: function () {
-
-				console.warn( 'THREE.OrbitControls: .dynamicDampingFactor has been renamed. Use .dampingFactor instead.' );
-				return this.dampingFactor;
-
-			},
-
-			set: function ( value ) {
-
-				console.warn( 'THREE.OrbitControls: .dynamicDampingFactor has been renamed. Use .dampingFactor instead.' );
-				this.dampingFactor = value;
-
-			}
-
-		}
-
-	} );
-
-	return OrbitControls;
+//    Orbit - left mouse / touch: one-finger move
+//    Zoom - middle mouse, or mousewheel / touch: two-finger spread or squish
+//    Pan - right mouse, or left mouse + ctrl/meta/shiftKey, or arrow keys / touch: two-finger move
+var OrbitControls = function (object, domElement) {
+  if (domElement === undefined) console.warn('THREE.OrbitControls: The second parameter "domElement" is now mandatory.');
+  if (domElement === document) console.error('THREE.OrbitControls: "document" should not be used as the target "domElement". Please use "renderer.domElement" instead.');
+  this.object = object;
+  this.domElement = domElement; // Set to false to disable this control
+
+  this.enabled = true; // "target" sets the location of focus, where the object orbits around
+
+  this.target = new _threeModule.Vector3(); // How far you can dolly in and out ( PerspectiveCamera only )
+
+  this.minDistance = 0;
+  this.maxDistance = Infinity; // How far you can zoom in and out ( OrthographicCamera only )
+
+  this.minZoom = 0;
+  this.maxZoom = Infinity; // How far you can orbit vertically, upper and lower limits.
+  // Range is 0 to Math.PI radians.
+
+  this.minPolarAngle = 0; // radians
+
+  this.maxPolarAngle = Math.PI; // radians
+  // How far you can orbit horizontally, upper and lower limits.
+  // If set, the interval [ min, max ] must be a sub-interval of [ - 2 PI, 2 PI ], with ( max - min < 2 PI )
+
+  this.minAzimuthAngle = -Infinity; // radians
+
+  this.maxAzimuthAngle = Infinity; // radians
+  // Set to true to enable damping (inertia)
+  // If damping is enabled, you must call controls.update() in your animation loop
+
+  this.enableDamping = false;
+  this.dampingFactor = 0.05; // This option actually enables dollying in and out; left as "zoom" for backwards compatibility.
+  // Set to false to disable zooming
+
+  this.enableZoom = true;
+  this.zoomSpeed = 1.0; // Set to false to disable rotating
+
+  this.enableRotate = true;
+  this.rotateSpeed = 1.0; // Set to false to disable panning
+
+  this.enablePan = true;
+  this.panSpeed = 1.0;
+  this.screenSpacePanning = true; // if false, pan orthogonal to world-space direction camera.up
+
+  this.keyPanSpeed = 7.0; // pixels moved per arrow key push
+  // Set to true to automatically rotate around the target
+  // If auto-rotate is enabled, you must call controls.update() in your animation loop
+
+  this.autoRotate = false;
+  this.autoRotateSpeed = 2.0; // 30 seconds per round when fps is 60
+  // Set to false to disable use of the keys
+
+  this.enableKeys = true; // The four arrow keys
+
+  this.keys = {
+    LEFT: 37,
+    UP: 38,
+    RIGHT: 39,
+    BOTTOM: 40
+  }; // Mouse buttons
+
+  this.mouseButtons = {
+    LEFT: _threeModule.MOUSE.ROTATE,
+    MIDDLE: _threeModule.MOUSE.DOLLY,
+    RIGHT: _threeModule.MOUSE.PAN
+  }; // Touch fingers
+
+  this.touches = {
+    ONE: _threeModule.TOUCH.ROTATE,
+    TWO: _threeModule.TOUCH.DOLLY_PAN
+  }; // for reset
+
+  this.target0 = this.target.clone();
+  this.position0 = this.object.position.clone();
+  this.zoom0 = this.object.zoom; //
+  // public methods
+  //
+
+  this.getPolarAngle = function () {
+    return spherical.phi;
+  };
+
+  this.getAzimuthalAngle = function () {
+    return spherical.theta;
+  };
+
+  this.saveState = function () {
+    scope.target0.copy(scope.target);
+    scope.position0.copy(scope.object.position);
+    scope.zoom0 = scope.object.zoom;
+  };
+
+  this.reset = function () {
+    scope.target.copy(scope.target0);
+    scope.object.position.copy(scope.position0);
+    scope.object.zoom = scope.zoom0;
+    scope.object.updateProjectionMatrix();
+    scope.dispatchEvent(changeEvent);
+    scope.update();
+    state = STATE.NONE;
+  }; // this method is exposed, but perhaps it would be better if we can make it private...
+
+
+  this.update = function () {
+    var offset = new _threeModule.Vector3(); // so camera.up is the orbit axis
+
+    var quat = new _threeModule.Quaternion().setFromUnitVectors(object.up, new _threeModule.Vector3(0, 1, 0));
+    var quatInverse = quat.clone().invert();
+    var lastPosition = new _threeModule.Vector3();
+    var lastQuaternion = new _threeModule.Quaternion();
+    var twoPI = 2 * Math.PI;
+    return function update() {
+      var position = scope.object.position;
+      offset.copy(position).sub(scope.target); // rotate offset to "y-axis-is-up" space
+
+      offset.applyQuaternion(quat); // angle from z-axis around y-axis
+
+      spherical.setFromVector3(offset);
+
+      if (scope.autoRotate && state === STATE.NONE) {
+        rotateLeft(getAutoRotationAngle());
+      }
+
+      if (scope.enableDamping) {
+        spherical.theta += sphericalDelta.theta * scope.dampingFactor;
+        spherical.phi += sphericalDelta.phi * scope.dampingFactor;
+      } else {
+        spherical.theta += sphericalDelta.theta;
+        spherical.phi += sphericalDelta.phi;
+      } // restrict theta to be between desired limits
+
+
+      var min = scope.minAzimuthAngle;
+      var max = scope.maxAzimuthAngle;
+
+      if (isFinite(min) && isFinite(max)) {
+        if (min < -Math.PI) min += twoPI;else if (min > Math.PI) min -= twoPI;
+        if (max < -Math.PI) max += twoPI;else if (max > Math.PI) max -= twoPI;
+
+        if (min <= max) {
+          spherical.theta = Math.max(min, Math.min(max, spherical.theta));
+        } else {
+          spherical.theta = spherical.theta > (min + max) / 2 ? Math.max(min, spherical.theta) : Math.min(max, spherical.theta);
+        }
+      } // restrict phi to be between desired limits
+
+
+      spherical.phi = Math.max(scope.minPolarAngle, Math.min(scope.maxPolarAngle, spherical.phi));
+      spherical.makeSafe();
+      spherical.radius *= scale; // restrict radius to be between desired limits
+
+      spherical.radius = Math.max(scope.minDistance, Math.min(scope.maxDistance, spherical.radius)); // move target to panned location
+
+      if (scope.enableDamping === true) {
+        scope.target.addScaledVector(panOffset, scope.dampingFactor);
+      } else {
+        scope.target.add(panOffset);
+      }
+
+      offset.setFromSpherical(spherical); // rotate offset back to "camera-up-vector-is-up" space
+
+      offset.applyQuaternion(quatInverse);
+      position.copy(scope.target).add(offset);
+      scope.object.lookAt(scope.target);
+
+      if (scope.enableDamping === true) {
+        sphericalDelta.theta *= 1 - scope.dampingFactor;
+        sphericalDelta.phi *= 1 - scope.dampingFactor;
+        panOffset.multiplyScalar(1 - scope.dampingFactor);
+      } else {
+        sphericalDelta.set(0, 0, 0);
+        panOffset.set(0, 0, 0);
+      }
+
+      scale = 1; // update condition is:
+      // min(camera displacement, camera rotation in radians)^2 > EPS
+      // using small-angle approximation cos(x/2) = 1 - x^2 / 8
+
+      if (zoomChanged || lastPosition.distanceToSquared(scope.object.position) > EPS || 8 * (1 - lastQuaternion.dot(scope.object.quaternion)) > EPS) {
+        scope.dispatchEvent(changeEvent);
+        lastPosition.copy(scope.object.position);
+        lastQuaternion.copy(scope.object.quaternion);
+        zoomChanged = false;
+        return true;
+      }
+
+      return false;
+    };
+  }();
+
+  this.dispose = function () {
+    scope.domElement.removeEventListener('contextmenu', onContextMenu, false);
+    scope.domElement.removeEventListener('pointerdown', onPointerDown, false);
+    scope.domElement.removeEventListener('wheel', onMouseWheel, false);
+    scope.domElement.removeEventListener('touchstart', onTouchStart, false);
+    scope.domElement.removeEventListener('touchend', onTouchEnd, false);
+    scope.domElement.removeEventListener('touchmove', onTouchMove, false);
+    scope.domElement.ownerDocument.removeEventListener('pointermove', onPointerMove, false);
+    scope.domElement.ownerDocument.removeEventListener('pointerup', onPointerUp, false);
+    scope.domElement.removeEventListener('keydown', onKeyDown, false); //scope.dispatchEvent( { type: 'dispose' } ); // should this be added here?
+  }; //
+  // internals
+  //
+
+
+  var scope = this;
+  var changeEvent = {
+    type: 'change'
+  };
+  var startEvent = {
+    type: 'start'
+  };
+  var endEvent = {
+    type: 'end'
+  };
+  var STATE = {
+    NONE: -1,
+    ROTATE: 0,
+    DOLLY: 1,
+    PAN: 2,
+    TOUCH_ROTATE: 3,
+    TOUCH_PAN: 4,
+    TOUCH_DOLLY_PAN: 5,
+    TOUCH_DOLLY_ROTATE: 6
+  };
+  var state = STATE.NONE;
+  var EPS = 0.000001; // current position in spherical coordinates
+
+  var spherical = new _threeModule.Spherical();
+  var sphericalDelta = new _threeModule.Spherical();
+  var scale = 1;
+  var panOffset = new _threeModule.Vector3();
+  var zoomChanged = false;
+  var rotateStart = new _threeModule.Vector2();
+  var rotateEnd = new _threeModule.Vector2();
+  var rotateDelta = new _threeModule.Vector2();
+  var panStart = new _threeModule.Vector2();
+  var panEnd = new _threeModule.Vector2();
+  var panDelta = new _threeModule.Vector2();
+  var dollyStart = new _threeModule.Vector2();
+  var dollyEnd = new _threeModule.Vector2();
+  var dollyDelta = new _threeModule.Vector2();
+
+  function getAutoRotationAngle() {
+    return 2 * Math.PI / 60 / 60 * scope.autoRotateSpeed;
+  }
+
+  function getZoomScale() {
+    return Math.pow(0.95, scope.zoomSpeed);
+  }
+
+  function rotateLeft(angle) {
+    sphericalDelta.theta -= angle;
+  }
+
+  function rotateUp(angle) {
+    sphericalDelta.phi -= angle;
+  }
+
+  var panLeft = function () {
+    var v = new _threeModule.Vector3();
+    return function panLeft(distance, objectMatrix) {
+      v.setFromMatrixColumn(objectMatrix, 0); // get X column of objectMatrix
+
+      v.multiplyScalar(-distance);
+      panOffset.add(v);
+    };
+  }();
+
+  var panUp = function () {
+    var v = new _threeModule.Vector3();
+    return function panUp(distance, objectMatrix) {
+      if (scope.screenSpacePanning === true) {
+        v.setFromMatrixColumn(objectMatrix, 1);
+      } else {
+        v.setFromMatrixColumn(objectMatrix, 0);
+        v.crossVectors(scope.object.up, v);
+      }
+
+      v.multiplyScalar(distance);
+      panOffset.add(v);
+    };
+  }(); // deltaX and deltaY are in pixels; right and down are positive
+
+
+  var pan = function () {
+    var offset = new _threeModule.Vector3();
+    return function pan(deltaX, deltaY) {
+      var element = scope.domElement;
+
+      if (scope.object.isPerspectiveCamera) {
+        // perspective
+        var position = scope.object.position;
+        offset.copy(position).sub(scope.target);
+        var targetDistance = offset.length(); // half of the fov is center to top of screen
+
+        targetDistance *= Math.tan(scope.object.fov / 2 * Math.PI / 180.0); // we use only clientHeight here so aspect ratio does not distort speed
+
+        panLeft(2 * deltaX * targetDistance / element.clientHeight, scope.object.matrix);
+        panUp(2 * deltaY * targetDistance / element.clientHeight, scope.object.matrix);
+      } else if (scope.object.isOrthographicCamera) {
+        // orthographic
+        panLeft(deltaX * (scope.object.right - scope.object.left) / scope.object.zoom / element.clientWidth, scope.object.matrix);
+        panUp(deltaY * (scope.object.top - scope.object.bottom) / scope.object.zoom / element.clientHeight, scope.object.matrix);
+      } else {
+        // camera neither orthographic nor perspective
+        console.warn('WARNING: OrbitControls.js encountered an unknown camera type - pan disabled.');
+        scope.enablePan = false;
+      }
+    };
+  }();
+
+  function dollyOut(dollyScale) {
+    if (scope.object.isPerspectiveCamera) {
+      scale /= dollyScale;
+    } else if (scope.object.isOrthographicCamera) {
+      scope.object.zoom = Math.max(scope.minZoom, Math.min(scope.maxZoom, scope.object.zoom * dollyScale));
+      scope.object.updateProjectionMatrix();
+      zoomChanged = true;
+    } else {
+      console.warn('WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.');
+      scope.enableZoom = false;
+    }
+  }
+
+  function dollyIn(dollyScale) {
+    if (scope.object.isPerspectiveCamera) {
+      scale *= dollyScale;
+    } else if (scope.object.isOrthographicCamera) {
+      scope.object.zoom = Math.max(scope.minZoom, Math.min(scope.maxZoom, scope.object.zoom / dollyScale));
+      scope.object.updateProjectionMatrix();
+      zoomChanged = true;
+    } else {
+      console.warn('WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.');
+      scope.enableZoom = false;
+    }
+  } //
+  // event callbacks - update the object state
+  //
+
+
+  function handleMouseDownRotate(event) {
+    rotateStart.set(event.clientX, event.clientY);
+  }
+
+  function handleMouseDownDolly(event) {
+    dollyStart.set(event.clientX, event.clientY);
+  }
+
+  function handleMouseDownPan(event) {
+    panStart.set(event.clientX, event.clientY);
+  }
+
+  function handleMouseMoveRotate(event) {
+    rotateEnd.set(event.clientX, event.clientY);
+    rotateDelta.subVectors(rotateEnd, rotateStart).multiplyScalar(scope.rotateSpeed);
+    var element = scope.domElement;
+    rotateLeft(2 * Math.PI * rotateDelta.x / element.clientHeight); // yes, height
+
+    rotateUp(2 * Math.PI * rotateDelta.y / element.clientHeight);
+    rotateStart.copy(rotateEnd);
+    scope.update();
+  }
+
+  function handleMouseMoveDolly(event) {
+    dollyEnd.set(event.clientX, event.clientY);
+    dollyDelta.subVectors(dollyEnd, dollyStart);
+
+    if (dollyDelta.y > 0) {
+      dollyOut(getZoomScale());
+    } else if (dollyDelta.y < 0) {
+      dollyIn(getZoomScale());
+    }
+
+    dollyStart.copy(dollyEnd);
+    scope.update();
+  }
+
+  function handleMouseMovePan(event) {
+    panEnd.set(event.clientX, event.clientY);
+    panDelta.subVectors(panEnd, panStart).multiplyScalar(scope.panSpeed);
+    pan(panDelta.x, panDelta.y);
+    panStart.copy(panEnd);
+    scope.update();
+  }
+
+  function handleMouseUp()
+  /*event*/
+  {// no-op
+  }
+
+  function handleMouseWheel(event) {
+    if (event.deltaY < 0) {
+      dollyIn(getZoomScale());
+    } else if (event.deltaY > 0) {
+      dollyOut(getZoomScale());
+    }
+
+    scope.update();
+  }
+
+  function handleKeyDown(event) {
+    var needsUpdate = false;
+
+    switch (event.keyCode) {
+      case scope.keys.UP:
+        pan(0, scope.keyPanSpeed);
+        needsUpdate = true;
+        break;
+
+      case scope.keys.BOTTOM:
+        pan(0, -scope.keyPanSpeed);
+        needsUpdate = true;
+        break;
+
+      case scope.keys.LEFT:
+        pan(scope.keyPanSpeed, 0);
+        needsUpdate = true;
+        break;
+
+      case scope.keys.RIGHT:
+        pan(-scope.keyPanSpeed, 0);
+        needsUpdate = true;
+        break;
+    }
+
+    if (needsUpdate) {
+      // prevent the browser from scrolling on cursor keys
+      event.preventDefault();
+      scope.update();
+    }
+  }
+
+  function handleTouchStartRotate(event) {
+    if (event.touches.length == 1) {
+      rotateStart.set(event.touches[0].pageX, event.touches[0].pageY);
+    } else {
+      var x = 0.5 * (event.touches[0].pageX + event.touches[1].pageX);
+      var y = 0.5 * (event.touches[0].pageY + event.touches[1].pageY);
+      rotateStart.set(x, y);
+    }
+  }
+
+  function handleTouchStartPan(event) {
+    if (event.touches.length == 1) {
+      panStart.set(event.touches[0].pageX, event.touches[0].pageY);
+    } else {
+      var x = 0.5 * (event.touches[0].pageX + event.touches[1].pageX);
+      var y = 0.5 * (event.touches[0].pageY + event.touches[1].pageY);
+      panStart.set(x, y);
+    }
+  }
+
+  function handleTouchStartDolly(event) {
+    var dx = event.touches[0].pageX - event.touches[1].pageX;
+    var dy = event.touches[0].pageY - event.touches[1].pageY;
+    var distance = Math.sqrt(dx * dx + dy * dy);
+    dollyStart.set(0, distance);
+  }
+
+  function handleTouchStartDollyPan(event) {
+    if (scope.enableZoom) handleTouchStartDolly(event);
+    if (scope.enablePan) handleTouchStartPan(event);
+  }
+
+  function handleTouchStartDollyRotate(event) {
+    if (scope.enableZoom) handleTouchStartDolly(event);
+    if (scope.enableRotate) handleTouchStartRotate(event);
+  }
+
+  function handleTouchMoveRotate(event) {
+    if (event.touches.length == 1) {
+      rotateEnd.set(event.touches[0].pageX, event.touches[0].pageY);
+    } else {
+      var x = 0.5 * (event.touches[0].pageX + event.touches[1].pageX);
+      var y = 0.5 * (event.touches[0].pageY + event.touches[1].pageY);
+      rotateEnd.set(x, y);
+    }
+
+    rotateDelta.subVectors(rotateEnd, rotateStart).multiplyScalar(scope.rotateSpeed);
+    var element = scope.domElement;
+    rotateLeft(2 * Math.PI * rotateDelta.x / element.clientHeight); // yes, height
+
+    rotateUp(2 * Math.PI * rotateDelta.y / element.clientHeight);
+    rotateStart.copy(rotateEnd);
+  }
+
+  function handleTouchMovePan(event) {
+    if (event.touches.length == 1) {
+      panEnd.set(event.touches[0].pageX, event.touches[0].pageY);
+    } else {
+      var x = 0.5 * (event.touches[0].pageX + event.touches[1].pageX);
+      var y = 0.5 * (event.touches[0].pageY + event.touches[1].pageY);
+      panEnd.set(x, y);
+    }
+
+    panDelta.subVectors(panEnd, panStart).multiplyScalar(scope.panSpeed);
+    pan(panDelta.x, panDelta.y);
+    panStart.copy(panEnd);
+  }
+
+  function handleTouchMoveDolly(event) {
+    var dx = event.touches[0].pageX - event.touches[1].pageX;
+    var dy = event.touches[0].pageY - event.touches[1].pageY;
+    var distance = Math.sqrt(dx * dx + dy * dy);
+    dollyEnd.set(0, distance);
+    dollyDelta.set(0, Math.pow(dollyEnd.y / dollyStart.y, scope.zoomSpeed));
+    dollyOut(dollyDelta.y);
+    dollyStart.copy(dollyEnd);
+  }
+
+  function handleTouchMoveDollyPan(event) {
+    if (scope.enableZoom) handleTouchMoveDolly(event);
+    if (scope.enablePan) handleTouchMovePan(event);
+  }
+
+  function handleTouchMoveDollyRotate(event) {
+    if (scope.enableZoom) handleTouchMoveDolly(event);
+    if (scope.enableRotate) handleTouchMoveRotate(event);
+  }
+
+  function handleTouchEnd()
+  /*event*/
+  {// no-op
+  } //
+  // event handlers - FSM: listen for events and reset state
+  //
+
+
+  function onPointerDown(event) {
+    if (scope.enabled === false) return;
+
+    switch (event.pointerType) {
+      case 'mouse':
+      case 'pen':
+        onMouseDown(event);
+        break;
+      // TODO touch
+    }
+  }
+
+  function onPointerMove(event) {
+    if (scope.enabled === false) return;
+
+    switch (event.pointerType) {
+      case 'mouse':
+      case 'pen':
+        onMouseMove(event);
+        break;
+      // TODO touch
+    }
+  }
+
+  function onPointerUp(event) {
+    switch (event.pointerType) {
+      case 'mouse':
+      case 'pen':
+        onMouseUp(event);
+        break;
+      // TODO touch
+    }
+  }
+
+  function onMouseDown(event) {
+    // Prevent the browser from scrolling.
+    event.preventDefault(); // Manually set the focus since calling preventDefault above
+    // prevents the browser from setting it automatically.
+
+    scope.domElement.focus ? scope.domElement.focus() : window.focus();
+    var mouseAction;
+
+    switch (event.button) {
+      case 0:
+        mouseAction = scope.mouseButtons.LEFT;
+        break;
+
+      case 1:
+        mouseAction = scope.mouseButtons.MIDDLE;
+        break;
+
+      case 2:
+        mouseAction = scope.mouseButtons.RIGHT;
+        break;
+
+      default:
+        mouseAction = -1;
+    }
+
+    switch (mouseAction) {
+      case _threeModule.MOUSE.DOLLY:
+        if (scope.enableZoom === false) return;
+        handleMouseDownDolly(event);
+        state = STATE.DOLLY;
+        break;
+
+      case _threeModule.MOUSE.ROTATE:
+        if (event.ctrlKey || event.metaKey || event.shiftKey) {
+          if (scope.enablePan === false) return;
+          handleMouseDownPan(event);
+          state = STATE.PAN;
+        } else {
+          if (scope.enableRotate === false) return;
+          handleMouseDownRotate(event);
+          state = STATE.ROTATE;
+        }
+
+        break;
+
+      case _threeModule.MOUSE.PAN:
+        if (event.ctrlKey || event.metaKey || event.shiftKey) {
+          if (scope.enableRotate === false) return;
+          handleMouseDownRotate(event);
+          state = STATE.ROTATE;
+        } else {
+          if (scope.enablePan === false) return;
+          handleMouseDownPan(event);
+          state = STATE.PAN;
+        }
+
+        break;
+
+      default:
+        state = STATE.NONE;
+    }
+
+    if (state !== STATE.NONE) {
+      scope.domElement.ownerDocument.addEventListener('pointermove', onPointerMove, false);
+      scope.domElement.ownerDocument.addEventListener('pointerup', onPointerUp, false);
+      scope.dispatchEvent(startEvent);
+    }
+  }
+
+  function onMouseMove(event) {
+    if (scope.enabled === false) return;
+    event.preventDefault();
+
+    switch (state) {
+      case STATE.ROTATE:
+        if (scope.enableRotate === false) return;
+        handleMouseMoveRotate(event);
+        break;
+
+      case STATE.DOLLY:
+        if (scope.enableZoom === false) return;
+        handleMouseMoveDolly(event);
+        break;
+
+      case STATE.PAN:
+        if (scope.enablePan === false) return;
+        handleMouseMovePan(event);
+        break;
+    }
+  }
+
+  function onMouseUp(event) {
+    scope.domElement.ownerDocument.removeEventListener('pointermove', onPointerMove, false);
+    scope.domElement.ownerDocument.removeEventListener('pointerup', onPointerUp, false);
+    if (scope.enabled === false) return;
+    handleMouseUp(event);
+    scope.dispatchEvent(endEvent);
+    state = STATE.NONE;
+  }
+
+  function onMouseWheel(event) {
+    if (scope.enabled === false || scope.enableZoom === false || state !== STATE.NONE && state !== STATE.ROTATE) return;
+    event.preventDefault();
+    event.stopPropagation();
+    scope.dispatchEvent(startEvent);
+    handleMouseWheel(event);
+    scope.dispatchEvent(endEvent);
+  }
+
+  function onKeyDown(event) {
+    if (scope.enabled === false || scope.enableKeys === false || scope.enablePan === false) return;
+    handleKeyDown(event);
+  }
+
+  function onTouchStart(event) {
+    if (scope.enabled === false) return;
+    event.preventDefault(); // prevent scrolling
+
+    switch (event.touches.length) {
+      case 1:
+        switch (scope.touches.ONE) {
+          case _threeModule.TOUCH.ROTATE:
+            if (scope.enableRotate === false) return;
+            handleTouchStartRotate(event);
+            state = STATE.TOUCH_ROTATE;
+            break;
+
+          case _threeModule.TOUCH.PAN:
+            if (scope.enablePan === false) return;
+            handleTouchStartPan(event);
+            state = STATE.TOUCH_PAN;
+            break;
+
+          default:
+            state = STATE.NONE;
+        }
+
+        break;
+
+      case 2:
+        switch (scope.touches.TWO) {
+          case _threeModule.TOUCH.DOLLY_PAN:
+            if (scope.enableZoom === false && scope.enablePan === false) return;
+            handleTouchStartDollyPan(event);
+            state = STATE.TOUCH_DOLLY_PAN;
+            break;
+
+          case _threeModule.TOUCH.DOLLY_ROTATE:
+            if (scope.enableZoom === false && scope.enableRotate === false) return;
+            handleTouchStartDollyRotate(event);
+            state = STATE.TOUCH_DOLLY_ROTATE;
+            break;
+
+          default:
+            state = STATE.NONE;
+        }
+
+        break;
+
+      default:
+        state = STATE.NONE;
+    }
+
+    if (state !== STATE.NONE) {
+      scope.dispatchEvent(startEvent);
+    }
+  }
+
+  function onTouchMove(event) {
+    if (scope.enabled === false) return;
+    event.preventDefault(); // prevent scrolling
+
+    event.stopPropagation();
+
+    switch (state) {
+      case STATE.TOUCH_ROTATE:
+        if (scope.enableRotate === false) return;
+        handleTouchMoveRotate(event);
+        scope.update();
+        break;
+
+      case STATE.TOUCH_PAN:
+        if (scope.enablePan === false) return;
+        handleTouchMovePan(event);
+        scope.update();
+        break;
+
+      case STATE.TOUCH_DOLLY_PAN:
+        if (scope.enableZoom === false && scope.enablePan === false) return;
+        handleTouchMoveDollyPan(event);
+        scope.update();
+        break;
+
+      case STATE.TOUCH_DOLLY_ROTATE:
+        if (scope.enableZoom === false && scope.enableRotate === false) return;
+        handleTouchMoveDollyRotate(event);
+        scope.update();
+        break;
+
+      default:
+        state = STATE.NONE;
+    }
+  }
+
+  function onTouchEnd(event) {
+    if (scope.enabled === false) return;
+    handleTouchEnd(event);
+    scope.dispatchEvent(endEvent);
+    state = STATE.NONE;
+  }
+
+  function onContextMenu(event) {
+    if (scope.enabled === false) return;
+    event.preventDefault();
+  } //
+
+
+  scope.domElement.addEventListener('contextmenu', onContextMenu, false);
+  scope.domElement.addEventListener('pointerdown', onPointerDown, false);
+  scope.domElement.addEventListener('wheel', onMouseWheel, false);
+  scope.domElement.addEventListener('touchstart', onTouchStart, false);
+  scope.domElement.addEventListener('touchend', onTouchEnd, false);
+  scope.domElement.addEventListener('touchmove', onTouchMove, false);
+  scope.domElement.addEventListener('keydown', onKeyDown, false); // force an update at start
+
+  this.update();
 };
 
-},{}],"canvas/shader/fragment.glsl":[function(require,module,exports) {
-module.exports = "#define GLSLIFY 1\nuniform float time;\nuniform float progress;\nuniform sampler2D texture1;\nuniform sampler2D texture2;\nuniform vec2 pixels;\nuniform vec2 uvRate1;\nuniform vec2 accel;\n\nvarying vec2 vUv;\nvarying vec2 vUv1;\nvarying vec4 vPosition;\n\nvoid main()\t{\n\tvec2 uv = gl_FragCoord.xy/pixels.xy;\n\t\n\tfloat p = fract(progress);\n\tvec4 fcolor;\n\n\tfloat p1 = p - 1.;\n\n\tvec2 position = step(0.,p)*uv + step(0.,-p)*(1. - uv);\n\n\t// texture 1\n\tfloat dx1 = p*0.8;\n\tfloat vert = abs(p*0.3);\n\tdx1 -= step(0.2 - vert,position.x/2.)*0.3*p;\n\tdx1 -= step(0.4 - vert,position.x/2.)*0.3*p;\n\tdx1 += step(0.6 - vert,position.x/2.)*0.3*p;\n\tdx1 += step(0.8 - vert,position.x/2.)*0.3*p;\n\tvec4 tex1 = texture2D(texture1,vec2(vUv1.x + dx1,vUv1.y));\n\tfloat bounds = step(0., 1. - (uv.x/2. + p))*step(0., uv.x/2. + p);\n\tfcolor = tex1*bounds;\n\n\t// texture 2\n\tfloat dx2 = p1*0.8;\n\tfloat vert1 = abs(p1*0.3);\n\tdx2 -= step(0.2 + vert1,position.x/2.)*0.3*p1;\n\tdx2 -= step(0.4 + vert1,position.x/2.)*0.3*p1;\n\tdx2 += step(0.6 + vert1,position.x/2.)*0.3*p1;\n\tdx2 += step(0.8 + vert1,position.x/2.)*0.3*p1;\n\tvec4 tex2 = texture2D(texture2,vec2(vUv1.x + dx2,vUv1.y));\n\tfloat bounds1 = step(0., 1. - (uv.x/2. + p1))*step(0., uv.x/2. + p1);\n\tfcolor += tex2*bounds1;\n\n\tgl_FragColor = fcolor;\n\t// gl_FragColor = vec4(bounds1);\n}";
+exports.OrbitControls = OrbitControls;
+OrbitControls.prototype = Object.create(_threeModule.EventDispatcher.prototype);
+OrbitControls.prototype.constructor = OrbitControls; // This set of controls performs orbiting, dollying (zooming), and panning.
+// Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
+// This is very similar to OrbitControls, another set of touch behavior
+//
+//    Orbit - right mouse, or left mouse + ctrl/meta/shiftKey / touch: two-finger rotate
+//    Zoom - middle mouse, or mousewheel / touch: two-finger spread or squish
+//    Pan - left mouse, or arrow keys / touch: one-finger move
+
+var MapControls = function (object, domElement) {
+  OrbitControls.call(this, object, domElement);
+  this.screenSpacePanning = false; // pan orthogonal to world-space direction camera.up
+
+  this.mouseButtons.LEFT = _threeModule.MOUSE.PAN;
+  this.mouseButtons.RIGHT = _threeModule.MOUSE.ROTATE;
+  this.touches.ONE = _threeModule.TOUCH.PAN;
+  this.touches.TWO = _threeModule.TOUCH.DOLLY_ROTATE;
+};
+
+exports.MapControls = MapControls;
+MapControls.prototype = Object.create(_threeModule.EventDispatcher.prototype);
+MapControls.prototype.constructor = MapControls;
+},{"../../../build/three.module.js":"node_modules/three/build/three.module.js"}],"canvas/shader/fragment.glsl":[function(require,module,exports) {
+module.exports = "#define GLSLIFY 1\nuniform float time;\nuniform float progress;\nuniform sampler2D t1,t2;\nuniform vec4 resolution;\nvarying vec2 vUv;\nvarying vec3 vPosition;\nfloat PI = 3.141592653589793238;\n  void main()\t{\n  vec2 newUV = (vUv - vec2(0.5))*resolution.zw + vec2(0.5);\n  vec4 i1 = texture2D(t1,newUV);\n  vec4 i2 = texture2D(t2,newUV);\n  float dist = distance(i1,i2)/2.;\n  //dist = newUV.x + 0.1*sin(newUV.y*10. + time);\n  float pr = step(dist,progress);\n  vec4 final = mix(\n\t\tmix(i1, i2, pr),\n\t\ti2,\n\t\tpr\n\t);\n  \n    gl_FragColor = vec4(final);\n  }";
 },{}],"canvas/shader/vertex.glsl":[function(require,module,exports) {
-module.exports = "#define GLSLIFY 1\nuniform float time;\nvarying vec2 vUv;\nvarying vec2 vUv1;\nvarying vec4 vPosition;\n\nuniform sampler2D texture1;\nuniform sampler2D texture2;\nuniform vec2 pixels;\nuniform vec2 uvRate1;\n\nvoid main() {\n  vUv = uv;\n  vec2 _uv = uv - 0.5;\n  vUv1 = _uv;\n  vUv1 *= uvRate1.xy;\n\n  vUv1 += 0.5;\n\n  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n}";
+module.exports = "#define GLSLIFY 1\nuniform float time;\nvarying vec2 vUv;\nvarying vec3 vPosition;\nuniform vec2 pixels;\nfloat PI = 3.141592653589793238;\n  void main() {\n    vUv = uv;\n    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n  }";
 },{}],"node_modules/dat.gui/build/dat.gui.module.js":[function(require,module,exports) {
 "use strict";
 
@@ -46791,844 +47056,14 @@ var index = {
 };
 var _default = index;
 exports.default = _default;
-},{}],"node_modules/browser-media-mime-type/mime-types.json":[function(require,module,exports) {
-module.exports = {
-  "audio/midi": ["mid", "midi", "kar", "rmi"],
-  "audio/mp4": ["mp4a", "m4a"],
-  "audio/mpeg": ["mpga", "mp2", "mp2a", "mp3", "m2a", "m3a"],
-  "audio/ogg": ["oga", "ogg", "spx"],
-  "audio/webm": ["weba"],
-  "audio/x-matroska": ["mka"],
-  "audio/x-mpegurl": ["m3u"],
-  "audio/wav": ["wav"],
-  "video/3gpp": ["3gp"],
-  "video/3gpp2": ["3g2"],
-  "video/mp4": ["mp4", "mp4v", "mpg4"],
-  "video/mpeg": ["mpeg", "mpg", "mpe", "m1v", "m2v"],
-  "video/ogg": ["ogv"],
-  "video/quicktime": ["qt", "mov"],
-  "video/webm": ["webm"],
-  "video/x-f4v": ["f4v"],
-  "video/x-fli": ["fli"],
-  "video/x-flv": ["flv"],
-  "video/x-m4v": ["m4v"],
-  "video/x-matroska": ["mkv", "mk3d", "mks"]
-};
-},{}],"node_modules/browser-media-mime-type/index.js":[function(require,module,exports) {
-// sourced from:
-// http://www.leanbackplayer.com/test/h5mt.html
-// https://github.com/broofa/node-mime/blob/master/types.json
-var mimeTypes = require('./mime-types.json')
-
-var mimeLookup = {}
-Object.keys(mimeTypes).forEach(function (key) {
-  var extensions = mimeTypes[key]
-  extensions.forEach(function (ext) {
-    mimeLookup[ext] = key
-  })
-})
-
-module.exports = function lookup (ext) {
-  if (!ext) throw new TypeError('must specify extension string')
-  if (ext.indexOf('.') === 0) {
-    ext = ext.substring(1)
-  }
-  return mimeLookup[ext.toLowerCase()]
-}
-
-},{"./mime-types.json":"node_modules/browser-media-mime-type/mime-types.json"}],"node_modules/load-asset/loaders/createMediaLoader.js":[function(require,module,exports) {
-var mime = require('browser-media-mime-type');
-
-function getMediaType (ext) {
-  var result = mime(ext);
-  if (!result) return null;
-  if (result.indexOf('audio') === 0) return 'audio';
-  if (result.indexOf('video') === 0) return 'video';
-  return null;
-}
-
-module.exports = function createMediaLoader (type, createElement) {
-  return {
-    key: type,
-    match: function (ext) {
-      return getMediaType(ext) === type;
-    },
-    load: function (opt) {
-      return new Promise(function (resolve, reject) {
-        var finished = false;
-        var media = createElement();
-        var onLoaded = function onLoaded () {
-          if (finished) return;
-          finished = true;
-          resolve(media);
-        };
-
-        var event = (opt.event || 'canplay').toLowerCase();
-        if (event === 'loadedmetadata') {
-          media.onloadedmetadata = onLoaded;
-        } else if (event === 'canplaythrough') {
-          media.oncanplaythrough = onLoaded;
-        } else if (event === 'loadeddata') {
-          media.onloadeddata = onLoaded;
-        } else {
-          media.oncanplay = onLoaded;
-        }
-
-        media.onerror = function onError (er) {
-          if (finished) return;
-          finished = true;
-          reject(new Error('Error while loading ' + type + ' at ' + opt.url));
-        };
-
-        // pass through media properties if defined
-        if (opt.crossOrigin) media.crossOrigin = opt.crossOrigin;
-        if (typeof opt.volume !== 'undefined') media.volume = opt.volume;
-        if (typeof opt.preload !== 'undefined') media.preload = opt.volume;
-        if (typeof opt.playbackRate !== 'undefined') media.playbackRate = opt.volume;
-        if (typeof opt.muted !== 'undefined') media.muted = opt.volume;
-        if (typeof opt.currentTime !== 'undefined') media.currentTime = opt.volume;
-        if (typeof opt.controls !== 'undefined') media.controls = opt.volume;
-        if (typeof opt.autoPlay !== 'undefined') media.autoPlay = opt.volume;
-
-        media.src = opt.url;
-
-        if (media.readyState >= media.HAVE_ENOUGH_DATA) {
-          finished = true;
-          return resolve(media);
-        }
-
-        media.load();
-      });
-    }
-  };
-};
-
-},{"browser-media-mime-type":"node_modules/browser-media-mime-type/index.js"}],"node_modules/global/window.js":[function(require,module,exports) {
-var global = arguments[3];
-var win;
-
-if (typeof window !== "undefined") {
-    win = window;
-} else if (typeof global !== "undefined") {
-    win = global;
-} else if (typeof self !== "undefined"){
-    win = self;
-} else {
-    win = {};
-}
-
-module.exports = win;
-
-},{}],"node_modules/is-function/index.js":[function(require,module,exports) {
-module.exports = isFunction
-
-var toString = Object.prototype.toString
-
-function isFunction (fn) {
-  if (!fn) {
-    return false
-  }
-  var string = toString.call(fn)
-  return string === '[object Function]' ||
-    (typeof fn === 'function' && string !== '[object RegExp]') ||
-    (typeof window !== 'undefined' &&
-     // IE8 and below
-     (fn === window.setTimeout ||
-      fn === window.alert ||
-      fn === window.confirm ||
-      fn === window.prompt))
-};
-
-},{}],"node_modules/parse-headers/parse-headers.js":[function(require,module,exports) {
-var trim = function(string) {
-  return string.replace(/^\s+|\s+$/g, '');
-}
-  , isArray = function(arg) {
-      return Object.prototype.toString.call(arg) === '[object Array]';
-    }
-
-module.exports = function (headers) {
-  if (!headers)
-    return {}
-
-  var result = {}
-
-  var headersArr = trim(headers).split('\n')
-
-  for (var i = 0; i < headersArr.length; i++) {
-    var row = headersArr[i]
-    var index = row.indexOf(':')
-    , key = trim(row.slice(0, index)).toLowerCase()
-    , value = trim(row.slice(index + 1))
-
-    if (typeof(result[key]) === 'undefined') {
-      result[key] = value
-    } else if (isArray(result[key])) {
-      result[key].push(value)
-    } else {
-      result[key] = [ result[key], value ]
-    }
-  }
-
-  return result
-}
-
-},{}],"node_modules/xhr/node_modules/xtend/immutable.js":[function(require,module,exports) {
-module.exports = extend;
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-
-function extend() {
-  var target = {};
-
-  for (var i = 0; i < arguments.length; i++) {
-    var source = arguments[i];
-
-    for (var key in source) {
-      if (hasOwnProperty.call(source, key)) {
-        target[key] = source[key];
-      }
-    }
-  }
-
-  return target;
-}
-},{}],"node_modules/xhr/index.js":[function(require,module,exports) {
-"use strict";
-var window = require("global/window")
-var isFunction = require("is-function")
-var parseHeaders = require("parse-headers")
-var xtend = require("xtend")
-
-module.exports = createXHR
-// Allow use of default import syntax in TypeScript
-module.exports.default = createXHR;
-createXHR.XMLHttpRequest = window.XMLHttpRequest || noop
-createXHR.XDomainRequest = "withCredentials" in (new createXHR.XMLHttpRequest()) ? createXHR.XMLHttpRequest : window.XDomainRequest
-
-forEachArray(["get", "put", "post", "patch", "head", "delete"], function(method) {
-    createXHR[method === "delete" ? "del" : method] = function(uri, options, callback) {
-        options = initParams(uri, options, callback)
-        options.method = method.toUpperCase()
-        return _createXHR(options)
-    }
-})
-
-function forEachArray(array, iterator) {
-    for (var i = 0; i < array.length; i++) {
-        iterator(array[i])
-    }
-}
-
-function isEmpty(obj){
-    for(var i in obj){
-        if(obj.hasOwnProperty(i)) return false
-    }
-    return true
-}
-
-function initParams(uri, options, callback) {
-    var params = uri
-
-    if (isFunction(options)) {
-        callback = options
-        if (typeof uri === "string") {
-            params = {uri:uri}
-        }
-    } else {
-        params = xtend(options, {uri: uri})
-    }
-
-    params.callback = callback
-    return params
-}
-
-function createXHR(uri, options, callback) {
-    options = initParams(uri, options, callback)
-    return _createXHR(options)
-}
-
-function _createXHR(options) {
-    if(typeof options.callback === "undefined"){
-        throw new Error("callback argument missing")
-    }
-
-    var called = false
-    var callback = function cbOnce(err, response, body){
-        if(!called){
-            called = true
-            options.callback(err, response, body)
-        }
-    }
-
-    function readystatechange() {
-        if (xhr.readyState === 4) {
-            setTimeout(loadFunc, 0)
-        }
-    }
-
-    function getBody() {
-        // Chrome with requestType=blob throws errors arround when even testing access to responseText
-        var body = undefined
-
-        if (xhr.response) {
-            body = xhr.response
-        } else {
-            body = xhr.responseText || getXml(xhr)
-        }
-
-        if (isJson) {
-            try {
-                body = JSON.parse(body)
-            } catch (e) {}
-        }
-
-        return body
-    }
-
-    function errorFunc(evt) {
-        clearTimeout(timeoutTimer)
-        if(!(evt instanceof Error)){
-            evt = new Error("" + (evt || "Unknown XMLHttpRequest Error") )
-        }
-        evt.statusCode = 0
-        return callback(evt, failureResponse)
-    }
-
-    // will load the data & process the response in a special response object
-    function loadFunc() {
-        if (aborted) return
-        var status
-        clearTimeout(timeoutTimer)
-        if(options.useXDR && xhr.status===undefined) {
-            //IE8 CORS GET successful response doesn't have a status field, but body is fine
-            status = 200
-        } else {
-            status = (xhr.status === 1223 ? 204 : xhr.status)
-        }
-        var response = failureResponse
-        var err = null
-
-        if (status !== 0){
-            response = {
-                body: getBody(),
-                statusCode: status,
-                method: method,
-                headers: {},
-                url: uri,
-                rawRequest: xhr
-            }
-            if(xhr.getAllResponseHeaders){ //remember xhr can in fact be XDR for CORS in IE
-                response.headers = parseHeaders(xhr.getAllResponseHeaders())
-            }
-        } else {
-            err = new Error("Internal XMLHttpRequest Error")
-        }
-        return callback(err, response, response.body)
-    }
-
-    var xhr = options.xhr || null
-
-    if (!xhr) {
-        if (options.cors || options.useXDR) {
-            xhr = new createXHR.XDomainRequest()
-        }else{
-            xhr = new createXHR.XMLHttpRequest()
-        }
-    }
-
-    var key
-    var aborted
-    var uri = xhr.url = options.uri || options.url
-    var method = xhr.method = options.method || "GET"
-    var body = options.body || options.data
-    var headers = xhr.headers = options.headers || {}
-    var sync = !!options.sync
-    var isJson = false
-    var timeoutTimer
-    var failureResponse = {
-        body: undefined,
-        headers: {},
-        statusCode: 0,
-        method: method,
-        url: uri,
-        rawRequest: xhr
-    }
-
-    if ("json" in options && options.json !== false) {
-        isJson = true
-        headers["accept"] || headers["Accept"] || (headers["Accept"] = "application/json") //Don't override existing accept header declared by user
-        if (method !== "GET" && method !== "HEAD") {
-            headers["content-type"] || headers["Content-Type"] || (headers["Content-Type"] = "application/json") //Don't override existing accept header declared by user
-            body = JSON.stringify(options.json === true ? body : options.json)
-        }
-    }
-
-    xhr.onreadystatechange = readystatechange
-    xhr.onload = loadFunc
-    xhr.onerror = errorFunc
-    // IE9 must have onprogress be set to a unique function.
-    xhr.onprogress = function () {
-        // IE must die
-    }
-    xhr.onabort = function(){
-        aborted = true;
-    }
-    xhr.ontimeout = errorFunc
-    xhr.open(method, uri, !sync, options.username, options.password)
-    //has to be after open
-    if(!sync) {
-        xhr.withCredentials = !!options.withCredentials
-    }
-    // Cannot set timeout with sync request
-    // not setting timeout on the xhr object, because of old webkits etc. not handling that correctly
-    // both npm's request and jquery 1.x use this kind of timeout, so this is being consistent
-    if (!sync && options.timeout > 0 ) {
-        timeoutTimer = setTimeout(function(){
-            if (aborted) return
-            aborted = true//IE9 may still call readystatechange
-            xhr.abort("timeout")
-            var e = new Error("XMLHttpRequest timeout")
-            e.code = "ETIMEDOUT"
-            errorFunc(e)
-        }, options.timeout )
-    }
-
-    if (xhr.setRequestHeader) {
-        for(key in headers){
-            if(headers.hasOwnProperty(key)){
-                xhr.setRequestHeader(key, headers[key])
-            }
-        }
-    } else if (options.headers && !isEmpty(options.headers)) {
-        throw new Error("Headers cannot be set on an XDomainRequest object")
-    }
-
-    if ("responseType" in options) {
-        xhr.responseType = options.responseType
-    }
-
-    if ("beforeSend" in options &&
-        typeof options.beforeSend === "function"
-    ) {
-        options.beforeSend(xhr)
-    }
-
-    // Microsoft Edge browser sends "undefined" when send is called with undefined value.
-    // XMLHttpRequest spec says to pass null as body to indicate no body
-    // See https://github.com/naugtur/xhr/issues/100.
-    xhr.send(body || null)
-
-    return xhr
-
-
-}
-
-function getXml(xhr) {
-    // xhr.responseXML will throw Exception "InvalidStateError" or "DOMException"
-    // See https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseXML.
-    try {
-        if (xhr.responseType === "document") {
-            return xhr.responseXML
-        }
-        var firefoxBugTakenEffect = xhr.responseXML && xhr.responseXML.documentElement.nodeName === "parsererror"
-        if (xhr.responseType === "" && !firefoxBugTakenEffect) {
-            return xhr.responseXML
-        }
-    } catch (e) {}
-
-    return null
-}
-
-function noop() {}
-
-},{"global/window":"node_modules/global/window.js","is-function":"node_modules/is-function/index.js","parse-headers":"node_modules/parse-headers/parse-headers.js","xtend":"node_modules/xhr/node_modules/xtend/immutable.js"}],"node_modules/object-assign/index.js":[function(require,module,exports) {
-/*
-object-assign
-(c) Sindre Sorhus
-@license MIT
-*/
-'use strict';
-/* eslint-disable no-unused-vars */
-
-var getOwnPropertySymbols = Object.getOwnPropertySymbols;
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-var propIsEnumerable = Object.prototype.propertyIsEnumerable;
-
-function toObject(val) {
-  if (val === null || val === undefined) {
-    throw new TypeError('Object.assign cannot be called with null or undefined');
-  }
-
-  return Object(val);
-}
-
-function shouldUseNative() {
-  try {
-    if (!Object.assign) {
-      return false;
-    } // Detect buggy property enumeration order in older V8 versions.
-    // https://bugs.chromium.org/p/v8/issues/detail?id=4118
-
-
-    var test1 = new String('abc'); // eslint-disable-line no-new-wrappers
-
-    test1[5] = 'de';
-
-    if (Object.getOwnPropertyNames(test1)[0] === '5') {
-      return false;
-    } // https://bugs.chromium.org/p/v8/issues/detail?id=3056
-
-
-    var test2 = {};
-
-    for (var i = 0; i < 10; i++) {
-      test2['_' + String.fromCharCode(i)] = i;
-    }
-
-    var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
-      return test2[n];
-    });
-
-    if (order2.join('') !== '0123456789') {
-      return false;
-    } // https://bugs.chromium.org/p/v8/issues/detail?id=3056
-
-
-    var test3 = {};
-    'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
-      test3[letter] = letter;
-    });
-
-    if (Object.keys(Object.assign({}, test3)).join('') !== 'abcdefghijklmnopqrst') {
-      return false;
-    }
-
-    return true;
-  } catch (err) {
-    // We don't expect any of the above to throw, but better to be safe.
-    return false;
-  }
-}
-
-module.exports = shouldUseNative() ? Object.assign : function (target, source) {
-  var from;
-  var to = toObject(target);
-  var symbols;
-
-  for (var s = 1; s < arguments.length; s++) {
-    from = Object(arguments[s]);
-
-    for (var key in from) {
-      if (hasOwnProperty.call(from, key)) {
-        to[key] = from[key];
-      }
-    }
-
-    if (getOwnPropertySymbols) {
-      symbols = getOwnPropertySymbols(from);
-
-      for (var i = 0; i < symbols.length; i++) {
-        if (propIsEnumerable.call(from, symbols[i])) {
-          to[symbols[i]] = from[symbols[i]];
-        }
-      }
-    }
-  }
-
-  return to;
-};
-},{}],"node_modules/load-asset/loaders/createFileLoader.js":[function(require,module,exports) {
-var xhr = require('xhr');
-var assign = require('object-assign');
-
-module.exports = function (type) {
-  return function loadFile (opt) {
-    var p;
-    if ('fetch' in window) {
-      p = window.fetch(opt.url, opt)
-        .then(function (response) {
-          if (/404/.test(response.status)) {
-            throw new Error('Resource not found');
-          }
-          if (!/^2/.test(response.status)) {
-            throw new Error('Unexpected HTTP Status Code: ' + response.status);
-          }
-          if (!response.ok) {
-            throw new Error('Response not OK');
-          }
-          if (type === 'json') {
-            return response.json();
-          } else if (type === 'binary') {
-            return response.arrayBuffer();
-          } else if (type === 'blob') {
-            return response.blob();
-          } else {
-            return response.text();
-          }
-        });
-    } else {
-      p = xhrFetch(type, opt);
-    }
-    return p.catch(function (err) {
-      throw new Error(
-        err.message + ' while loading file ' + opt.url
-      );
-    });
-  };
-};
-
-function xhrFetch (type, opt) {
-  return new Promise(function (resolve, reject) {
-    var responseType = 'text';
-    if (type === 'json') responseType = 'text';
-    else if (type === 'binary') responseType = 'arraybuffer';
-    else if (type === 'blob') responseType = 'blob';
-    opt = assign({}, opt, {
-      json: false,
-      responseType: responseType
-    });
-    xhr(opt, function (err, res, body) {
-      if (err) return reject(err);
-      if (/404/.test(res.statusCode)) {
-        throw new Error('Resource not found');
-      }
-      if (!/^2/.test(res.statusCode)) {
-        return reject(new Error('Unexpected HTTP Status Code: ' + res.statusCode));
-      }
-      if (type === 'json') {
-        try {
-          body = JSON.parse(body);
-        } catch (err) {
-          return reject(err);
-        }
-      }
-      resolve(body);
-    });
-  });
-}
-
-},{"xhr":"node_modules/xhr/index.js","object-assign":"node_modules/object-assign/index.js"}],"node_modules/load-asset/loaders/loadImage.js":[function(require,module,exports) {
-module.exports = function (opt) {
-  return new Promise(function (resolve, reject) {
-    var finished = false;
-    var image = new window.Image();
-    image.onload = function onLoaded () {
-      if (finished) return;
-      finished = true;
-      resolve(image);
-    };
-    image.onerror = function onError () {
-      if (finished) return;
-      finished = true;
-      reject(new Error('Error while loading image at ' + opt.url));
-    };
-    if (opt.crossOrigin) image.crossOrigin = opt.crossOrigin;
-    image.src = opt.url;
-  });
-};
-
-},{}],"node_modules/load-asset/loaders/index.js":[function(require,module,exports) {
-const createMediaLoader = require('./createMediaLoader');
-const createFileLoader = require('./createFileLoader');
-const loadImage = require('./loadImage');
-
-module.exports = [
-  // json
-  {
-    key: 'json',
-    match: /\.json$/i,
-    load: createFileLoader('json')
-  },
-  // text
-  {
-    key: 'text',
-    match: /\.txt$/i,
-    load: createFileLoader('text')
-  },
-  // image
-  {
-    key: 'image',
-    match: /\.(jpg|jpeg|svg|png|gif|webp|bmp|tga|tif|apng|wbpm|ico)$/i,
-    load: loadImage
-  },
-  // audio
-  createMediaLoader('audio', function () {
-    return new window.Audio();
-  }),
-  // video
-  createMediaLoader('video', function () {
-    return document.createElement('video');
-  }),
-  // binary
-  {
-    key: 'binary',
-    match: /\.bin$/i,
-    load: createFileLoader('binary')
-  },
-  // blob
-  {
-    key: 'blob',
-    load: createFileLoader('blob')
-  }
-];
-
-},{"./createMediaLoader":"node_modules/load-asset/loaders/createMediaLoader.js","./createFileLoader":"node_modules/load-asset/loaders/createFileLoader.js","./loadImage":"node_modules/load-asset/loaders/loadImage.js"}],"node_modules/is-promise/index.js":[function(require,module,exports) {
-module.exports = isPromise;
-module.exports.default = isPromise;
-
-function isPromise(obj) {
-  return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
-}
-
-},{}],"node_modules/load-asset/index.js":[function(require,module,exports) {
-var loaders = require('./loaders');
-var assign = require('object-assign');
-var isPromise = require('is-promise');
-var noop = function () {};
-
-module.exports = loadAsset;
-
-module.exports.all = function all (opt, progress) {
-  return loadMultiple(opt, progress, false);
-};
-
-module.exports.any = function any (opt, progress) {
-  return loadMultiple(opt, progress, true);
-};
-
-function loadMultiple (opt, progress, skipMissing) {
-  progress = progress || noop;
-  if (typeof progress !== 'function') {
-    return Promise.reject(new Error('The second argument to load.all() and load.any() must be a function, or undefined'));
-  }
-
-  var total;
-  var count = 0;
-  var load;
-  var emitProgress = function (item, value, count, error) {
-    var obj = {
-      target: item,
-      total: total,
-      count: count,
-      progress: count / total,
-      value: value
-    };
-    if (error) obj.error = error;
-    progress(obj);
-  };
-
-  if (skipMissing) {
-    load = function (opt) {
-      return loadAsset(opt).then(function (result) {
-        return { value: result };
-      }, function (error) {
-        return { value: null, error: error };
-      }).then(function (optional) {
-        emitProgress(opt, optional.value, ++count, optional.error);
-        return optional.value;
-      });
-    };
-  } else {
-    load = function (opt) {
-      return loadAsset(opt).then(function (result) {
-        emitProgress(opt, result, ++count);
-        return result;
-      });
-    };
-  }
-
-  if (Array.isArray(opt)) {
-    total = opt.length;
-    return Promise.all(opt.map(function (item) {
-      return load(item);
-    }));
-  } else if (opt) {
-    var entries = Object.keys(opt).map(function (key) {
-      return { key: key, value: opt[key] };
-    });
-    total = entries.length;
-    return Promise.all(entries.map(function (item) {
-      var key = item.key;
-      return load(item.value).then(function (value) {
-        return { value: value, key: key };
-      });
-    })).then(function (results) {
-      return results.reduce(function (obj, item) {
-        obj[item.key] = item.value;
-        return obj;
-      }, {});
-    });
-  } else {
-    return Promise.reject(new Error('You must specify an array of assets or object group to load'));
-  }
-}
-
-function loadAsset (opt) {
-  if (!opt) return Promise.reject(new Error('You must specify a URL or descriptor of the asset to load'));
-  if (typeof opt === 'string') {
-    opt = { url: opt };
-  }
-  // If it's a promise, assume nested features...
-  if (isPromise(opt)) return opt;
-  return getLoader(opt).then(function (loader) {
-    opt = assign({}, opt);
-    delete opt.type;
-    return loader(opt);
-  });
-}
-
-function getLoader (opt) {
-  var i, loader;
-  var type = opt.type ? opt.type : null;
-  if (type) {
-    // Allow user to specify custom type function
-    if (typeof type === 'function') {
-      return Promise.resolve(type);
-    } else {
-      type = type.toLowerCase();
-    }
-    // User specified an explicit type, use that.
-    if (!opt.url) {
-      return Promise.reject(new Error('When using loadAsset(), you must specify a URL or descriptor of the asset to load'));
-    }
-    for (i = 0; i < loaders.length; i++) {
-      loader = loaders[i];
-      if (loader.key === type) return Promise.resolve(loader.load);
-    }
-    return Promise.reject(new Error('Could not find an asset loader by the key "' + opt.type + '"'));
-  } else {
-    // User didn't specify type, try to infer from file extension
-    if (!opt.url) {
-      return Promise.reject(new Error('When using loadAsset(), you must specify a URL or descriptor of the asset to load'));
-    }
-    var ext = extname(opt.url);
-    if (!ext) return Promise.reject(new Error('No extension found for input URL "' + opt.url + '", try to specify a { type } such as "image" or "text"'));
-    for (i = 0; i < loaders.length; i++) {
-      loader = loaders[i];
-      if (!loader.match) continue;
-      var isMatch = typeof loader.match === 'function'
-        ? loader.match(ext)
-        : loader.match.test(ext);
-      if (isMatch) return Promise.resolve(loader.load);
-    }
-    return Promise.reject(new Error('Could not infer an asset loader from the file type "' + ext + '", try specifying { type } such as "image" or "text"'));
-  }
-}
-
-function extname (url) {
-  if (!url) return '';
-  var idx = url.lastIndexOf('/');
-  if (idx !== -1) url = url.substring(idx + 1); // Keep path without its segments
-  idx = url.indexOf('?');
-  if (idx !== -1) url = url.substring(0, idx); // Remove query
-  idx = url.indexOf('#');
-  if (idx !== -1) url = url.substring(0, idx); // Remove fragment
-  idx = url.lastIndexOf('.');
-  return idx !== -1 ? url.substring(idx) : '';
-}
-
-},{"./loaders":"node_modules/load-asset/loaders/index.js","object-assign":"node_modules/object-assign/index.js","is-promise":"node_modules/is-promise/index.js"}],"assets/1.jpg":[function(require,module,exports) {
-module.exports = "/1.281c93e8.jpg";
+},{}],"img/about.jpg":[function(require,module,exports) {
+module.exports = "/about.362ad159.jpg";
+},{}],"img/blog.jpg":[function(require,module,exports) {
+module.exports = "/blog.6b48d446.jpg";
+},{}],"img/contact.jpeg":[function(require,module,exports) {
+module.exports = "/contact.1fffaa40.jpeg";
+},{}],"img/home.jpg":[function(require,module,exports) {
+module.exports = "/home.dc07cc9e.jpg";
 },{}],"canvas/app.js":[function(require,module,exports) {
 "use strict";
 
@@ -47639,6 +47074,8 @@ exports.default = void 0;
 
 var THREE = _interopRequireWildcard(require("three"));
 
+var _OrbitControls = require("three/examples/jsm/controls/OrbitControls.js");
+
 var _fragment = _interopRequireDefault(require("./shader/fragment.glsl"));
 
 var _vertex = _interopRequireDefault(require("./shader/vertex.glsl"));
@@ -47647,9 +47084,13 @@ var dat = _interopRequireWildcard(require("dat.gui"));
 
 var _gsap = _interopRequireDefault(require("gsap"));
 
-var _loadAsset = _interopRequireDefault(require("load-asset"));
+var _about = _interopRequireDefault(require("../img/about.jpg"));
 
-var _ = _interopRequireDefault(require("../assets/1.jpg"));
+var _blog = _interopRequireDefault(require("../img/blog.jpg"));
+
+var _contact = _interopRequireDefault(require("../img/contact.jpeg"));
+
+var _home = _interopRequireDefault(require("../img/home.jpg"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -47657,47 +47098,27 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var OrbitControls = require("three-orbit-controls")(THREE); // import { GLTFLoader } from 'js/GLTFLoader.js';
-
-
-var gallery = [new THREE.TextureLoader().load('../assets/1.jpg'), new THREE.TextureLoader().load('../assets/2.jpg'), new THREE.TextureLoader().load('../assets/3.jpg'), new THREE.TextureLoader().load('../assets/4.jpg')];
-var assets = ['../assets/1.jpg', '../assets/2.jpg', '../assets/3.jpg', '../assets/4.jpg']; // let config = [
-//   {
-//     page: 'homepage',
-//     img: home
-//   },
-//   {
-//     page: 'about',
-//     img: new THREE.TextureLoader().load('../assets/2.jpg')
-//   },
-//   {
-//     page: 'contact',
-//     img: new THREE.TextureLoader().load('../assets/3.jpg')
-//   },
-//   {
-//     page: 'blog',
-//     img: new THREE.TextureLoader().load('../assets/4.jpg')
-//   },
-// ];
-
 var Sketch = /*#__PURE__*/function () {
-  function Sketch(images, start) {
-    var _this = this;
-
+  function Sketch() {
     _classCallCheck(this, Sketch);
 
     this.scene = new THREE.Scene(); // this.container = options.dom;
+    // this.width = this.container.offsetWidth;
+    // this.height = this.container.offsetHeight;
 
-    this.width = window.offsetWidth;
-    this.height = window.offsetHeight;
-    this.renderer = new THREE.WebGLRenderer();
-    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer = new THREE.WebGLRenderer({
+      antialias: true
+    }); // this.renderer.setPixelRatio(window.devicePixelRatio);
+
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.setSize(this.width, this.height);
     this.renderer.setClearColor(0xeeeeee, 1);
     this.renderer.physicallyCorrectLights = true;
@@ -47710,81 +47131,33 @@ var Sketch = /*#__PURE__*/function () {
     var aspect = window.innerWidth / window.innerHeight;
     this.camera = new THREE.OrthographicCamera(frustumSize / -2, frustumSize / 2, frustumSize / 2, frustumSize / -2, -1000, 1000);
     this.camera.position.set(0, 0, 2);
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls = new _OrbitControls.OrbitControls(this.camera, this.renderer.domElement);
     this.time = 0;
     this.isPlaying = true;
+    this.addObjects();
+    this.resize();
+    this.render();
+    this.setupResize(); // this.settings();
 
-    _loadAsset.default.all(images).then(function (assets) {
-      _this.addObjects();
-
-      for (var key in assets) {
-        assets[key] = new THREE.Texture(assets[key]);
-      }
-
-      _this.material.uniforms.t1.value = assets[start] || assets["index"];
-      _this.material.uniforms.t1.value.needsUpdate = true;
-      _this.assets = assets;
-
-      _this.addObjects();
-
-      _this.resize();
-
-      _this.render();
-
-      _this.setupResize();
-
-      _this.settings();
-
-      _this.click();
-
-      _this.play();
-    });
+    var loader = new THREE.TextureLoader();
+    this.config = [{
+      page: 'home',
+      texture: loader.load(_home.default)
+    }, {
+      page: 'about',
+      texture: loader.load(_about.default)
+    }, {
+      page: 'contact',
+      texture: loader.load(_contact.default)
+    }, {
+      page: 'blog',
+      texture: loader.load(_blog.default)
+    }];
   }
 
   _createClass(Sketch, [{
-    key: "goto",
-    value: function goto(page) {
-      if (sketch.assets) sketch.changeBG(page);
-      var gotoPage = config.find(function (o) {
-        return o.page == page;
-      });
-      console.log(gotoPage, 'Going to the page');
-    }
-  }, {
-    key: "changeBG",
-    value: function changeBG(newpage) {
-      var _this2 = this;
-
-      if (this.animating) {
-        this.nextShow = newpage;
-        return;
-      }
-
-      this.animating = true;
-      var nextTexture = this.assets[newpage] || this.assets["index"];
-      this.material.uniforms.t2.value = nextTexture;
-      this.material.uniforms.t2.value.needsUpdate = true;
-
-      _gsap.default.to(this.material.uniforms.progress, {
-        duration: 2,
-        value: 1,
-        onComplete: function onComplete() {
-          _this2.material.uniforms.progress.value = 0;
-          _this2.material.uniforms.t1.value = nextTexture;
-          _this2.animating = false;
-
-          if (_this2.nextShow) {
-            _this2.changeBG(_this2.nextShow);
-
-            _this2.nextShow = null;
-          }
-        }
-      });
-    }
-  }, {
     key: "settings",
     value: function settings() {
-      var that = this;
       this.settings = {
         progress: 0
       };
@@ -47819,30 +47192,24 @@ var Sketch = /*#__PURE__*/function () {
       this.material.uniforms.resolution.value.x = this.width;
       this.material.uniforms.resolution.value.y = this.height;
       this.material.uniforms.resolution.value.z = a1;
-      this.material.uniforms.resolution.value.w = a2;
-      this.camera.fov = 2 * Math.atan(this.width / this.camera.aspect / (2 * this.cameraDistance)) * (180 / Math.PI); // in degrees
-      // calculate scene MIGHT NEED?
-      // let dist  = camera.position.z - plane.position.z;
-      // let height = 1;
-      // camera.fov = 2*(180/Math.PI)*Math.atan(height/(2*dist));
-      // // if(w/h>1) {
-      // plane.scale.x = w/h;
-      // // }
+      this.material.uniforms.resolution.value.w = a2; // this.camera.fov =
+      //   2 *
+      //   Math.atan(this.width / this.camera.aspect / (2 * this.cameraDistance)) *
+      //   (180 / Math.PI); // in degrees
 
       this.camera.updateProjectionMatrix();
-    } // NEEDED NOT SURE
-    // resize();
-
+    }
   }, {
     key: "addObjects",
     value: function addObjects() {
-      var that = this;
+      var _uniforms;
+
       this.material = new THREE.ShaderMaterial({
         extensions: {
           derivatives: "#extension GL_OES_standard_derivatives : enable"
         },
         side: THREE.DoubleSide,
-        uniforms: {
+        uniforms: (_uniforms = {
           time: {
             value: 0
           },
@@ -47854,17 +47221,16 @@ var Sketch = /*#__PURE__*/function () {
           },
           t2: {
             value: null
-          },
-          t3: {
-            value: null
-          },
-          t4: {
-            value: null
-          },
-          resolution: {
-            value: new THREE.Vector4()
           }
-        },
+        }, _defineProperty(_uniforms, "t1", {
+          value: new THREE.TextureLoader().load(_home.default)
+        }), _defineProperty(_uniforms, "t2", {
+          value: new THREE.TextureLoader().load(_about.default)
+        }), _defineProperty(_uniforms, "resolution", {
+          value: new THREE.Vector4()
+        }), _defineProperty(_uniforms, "uvRate1", {
+          value: new THREE.Vector2(1, 1)
+        }), _uniforms),
         // wireframe: true,
         // transparent: true,
         vertexShader: _vertex.default,
@@ -47873,24 +47239,24 @@ var Sketch = /*#__PURE__*/function () {
       this.geometry = new THREE.PlaneBufferGeometry(1, 1, 1, 1);
       this.plane = new THREE.Mesh(this.geometry, this.material);
       this.scene.add(this.plane);
-    } // let override = false;
-
+    }
   }, {
-    key: "click",
-    value: function click() {
-      var _this3 = this;
+    key: "goto",
+    value: function goto(page) {
+      var _this = this;
 
-      document.querySelector('body').addEventListener('click', function () {
-        var tl = _gsap.default.timeline({});
-
-        var pos = _this3.material.uniforms.progress.value;
-        var next = 1 + ((Math.floor(pos) + 1) % gallery.length - 1 + gallery.length) % gallery.length;
-        tl.to(_this3.material.uniforms.progress, {
-          duration: 0.7
-        }, {
-          value: next,
-          ease: 'power2.easeOut'
-        });
+      var gotoPage = this.config.find(function (o) {
+        return o.page == page;
+      });
+      this.material.uniforms.t2.value = gotoPage.texture;
+      var tl = new _gsap.default.timeline();
+      tl.to(this.material.uniforms.progress, {
+        duration: 1,
+        value: 1,
+        onComplete: function onComplete() {
+          _this.material.uniforms.progress.value = 0;
+          _this.material.uniforms.t1.value = gotoPage.texture;
+        }
       });
     }
   }, {
@@ -47919,10 +47285,13 @@ var Sketch = /*#__PURE__*/function () {
   }]);
 
   return Sketch;
-}();
+}(); // new Sketch({
+//   dom: document.getElementById('container')
+// });
+
 
 exports.default = Sketch;
-},{"three":"node_modules/three/build/three.module.js","three-orbit-controls":"node_modules/three-orbit-controls/index.js","./shader/fragment.glsl":"canvas/shader/fragment.glsl","./shader/vertex.glsl":"canvas/shader/vertex.glsl","dat.gui":"node_modules/dat.gui/build/dat.gui.module.js","gsap":"node_modules/gsap/index.js","load-asset":"node_modules/load-asset/index.js","../assets/1.jpg":"assets/1.jpg"}],"fade.js":[function(require,module,exports) {
+},{"three":"node_modules/three/build/three.module.js","three/examples/jsm/controls/OrbitControls.js":"node_modules/three/examples/jsm/controls/OrbitControls.js","./shader/fragment.glsl":"canvas/shader/fragment.glsl","./shader/vertex.glsl":"canvas/shader/vertex.glsl","dat.gui":"node_modules/dat.gui/build/dat.gui.module.js","gsap":"node_modules/gsap/index.js","../img/about.jpg":"img/about.jpg","../img/blog.jpg":"img/blog.jpg","../img/contact.jpeg":"img/contact.jpeg","../img/home.jpg":"img/home.jpg"}],"fade.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -47934,7 +47303,7 @@ var _highway = _interopRequireDefault(require("@dogstudio/highway"));
 
 var _gsap = _interopRequireDefault(require("gsap"));
 
-var _SplitText = require("./SplitText.min");
+var _SplitText = require("gsap/SplitText");
 
 var _app = _interopRequireDefault(require("./canvas/app"));
 
@@ -47948,7 +47317,11 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _createSuper(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
@@ -47958,13 +47331,9 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
 _gsap.default.registerPlugin(_SplitText.SplitText);
 
-var sketch = new _app.default(); // let split;
+var sketch = new _app.default();
 
 var animation = _gsap.default.timeline({});
 
@@ -47984,11 +47353,12 @@ var Fade = /*#__PURE__*/function (_Highway$Transition) {
     value: function out(_ref) {
       var from = _ref.from,
           done = _ref.done;
-      console.log('OUT', from);
 
+      // console.log('OUT', from);
       var tl = _gsap.default.timeline({
         defaults: {
-          duration: 0.5,
+          // duration: 0.5,
+          duration: 1,
           ease: 'power1.inOut'
         },
         onComplete: done
@@ -48019,12 +47389,12 @@ var Fade = /*#__PURE__*/function (_Highway$Transition) {
           each: 0.05
         }
       });
-      from.remove();
-      console.log('IN', from, to);
+      from.remove(); // console.log('IN', from, to);
 
       var tl = _gsap.default.timeline({
         defaults: {
-          duration: 0.5,
+          // duration: 0.5,
+          duration: 1,
           ease: 'power1.inOut'
         },
         onComplete: done
@@ -48043,7 +47413,7 @@ var Fade = /*#__PURE__*/function (_Highway$Transition) {
 }(_highway.default.Transition);
 
 exports.default = Fade;
-},{"@dogstudio/highway":"node_modules/@dogstudio/highway/build/highway.module.js","gsap":"node_modules/gsap/index.js","./SplitText.min":"SplitText.min.js","./canvas/app":"canvas/app.js"}],"app.js":[function(require,module,exports) {
+},{"@dogstudio/highway":"node_modules/@dogstudio/highway/build/highway.module.js","gsap":"node_modules/gsap/index.js","gsap/SplitText":"node_modules/gsap/SplitText.js","./canvas/app":"canvas/app.js"}],"app.js":[function(require,module,exports) {
 "use strict";
 
 var _highway = _interopRequireDefault(require("@dogstudio/highway"));
@@ -48085,7 +47455,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52804" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51500" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

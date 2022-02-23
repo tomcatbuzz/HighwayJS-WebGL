@@ -1,23 +1,21 @@
 import Highway from '@dogstudio/highway';
 import gsap from 'gsap';
-import { SplitText } from './SplitText.min';
+import { SplitText } from 'gsap/SplitText';
 gsap.registerPlugin(SplitText);
-
-
 
 import A from './canvas/app';
 
 let sketch = new A();
 
-// let split;
 let animation = gsap.timeline({});
 
 export default class Fade extends Highway.Transition {
   out({from, done}) {
-    console.log('OUT', from);
+    // console.log('OUT', from);
     const tl = gsap.timeline({
       defaults: {
-        duration: 0.5,
+        // duration: 0.5,
+        duration: 1,
         ease: 'power1.inOut'
       },
       onComplete: done
@@ -36,10 +34,11 @@ export default class Fade extends Highway.Transition {
 		each:0.05
 	  }});
     from.remove();
-    console.log('IN', from, to);
+    // console.log('IN', from, to);
     const tl = gsap.timeline({
       defaults: {
-        duration: 0.5,
+        // duration: 0.5,
+        duration: 1,
         ease: 'power1.inOut'
       },
       onComplete: done
